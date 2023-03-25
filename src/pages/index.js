@@ -275,7 +275,7 @@ export default function Home() {
   }, [user]);
   return (
     <>
-      <Layout>
+      {/* <Layout> */}
         <h1 className="text-lg font-bold">Notification Example</h1>
         <form noValidate onSubmit={handleSubmit(submitHandler)}>
           <div>
@@ -436,7 +436,7 @@ export default function Home() {
         >
           LOGOUT
         </button>
-      </Layout>
+      {/* </Layout> */}
     </>
   );
 }
