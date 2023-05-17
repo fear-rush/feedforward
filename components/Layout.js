@@ -29,7 +29,13 @@ function Layout({ children }) {
         <nav className="mt-1 flex h-20 w-full items-center justify-between px-6 shadow-md sm:px-12 lg:h-16 lg:px-16">
           <div className="hidden cursor-pointer md:block">
             <Link href="/">
-              <Image src={desktoplogo} width={60} height={60} />
+              <Image
+                src={desktoplogo}
+                width={35}
+                height={35}
+                style={{ width: "auto", height: "auto" }}
+                priority={false}
+              />
             </Link>
           </div>
 
@@ -61,7 +67,7 @@ function Layout({ children }) {
                 leaveFrom="transfrom opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale095"
               >
-                <Menu.Items className="absolute right-0 top-[3.8rem] z-50 mt-2 w-full origin-top rounded-b-xl bg-white text-center shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none lg:w-40 lg:right-16">
+                <Menu.Items className="absolute right-0 top-[4.5rem] z-50 mt-2 w-full origin-top rounded-b-xl bg-white text-center shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none lg:w-40 lg:right-16 lg:top-[3.8rem]">
                   <div className="py-3">
                     <Menu.Item as="div" className="lg:hidden">
                       <a
@@ -84,11 +90,6 @@ function Layout({ children }) {
                       <div>
                         <p
                           className="block px-3 py-2 text-sm font-medium text-gray-700 cursor-pointer"
-                          // onClick={() => {
-                          //   logOut();
-                          //   console.log(user);
-                          //   router.replace("/signin");
-                          // }}
                           onClick={() => {
                             logOut();
                             router.replace("/signin");
@@ -160,7 +161,7 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      <main className="container mx-auto mb-auto mt-4 min-h-screen max-w-screen-xl lg:px-4 border-2 border-red-500">
+      <main className="container mx-auto mb-auto mt-4 min-h-screen max-w-screen-xl lg:px-4 border-red-500 border-2">
         {children}
       </main>
     </>

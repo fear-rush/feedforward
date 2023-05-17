@@ -216,7 +216,7 @@ const SignUpPage = () => {
                     <p className="text-sm text-gray-500">
                       Your account has been successfully created. Please
                       redirect to sign in page and sign in with credentials that
-                      you've been submitted.
+                      you{`&apos`}ve been submitted.
                     </p>
                   </div>
 

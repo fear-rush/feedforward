@@ -20,6 +20,10 @@ body {
   overflow-x: hidden;
 }
 
+textarea {
+  resize: none;
+}
+
 body {
 }
 

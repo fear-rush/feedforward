@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-import { set, useForm } from "react-hook-form";
-import { UserAuth } from "context/AuthContext";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "utils/firebaseconfig";
-import { useRouter } from "next/router";
-import { ToastContainer, toast } from "react-toastify";
-import Link from "next/link";
+import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-import "react-toastify/dist/ReactToastify.css";
+import { doc, getDoc } from "firebase/firestore";
+import { BeatLoader } from "react-spinners";
+import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+
+
+import { UserAuth } from "context/AuthContext";
+import { db } from "utils/firebaseconfig";
+
 import splitframe from "../../public/signin/frame2.png";
+import "react-toastify/dist/ReactToastify.css";
 
 const override = {
   borderColor: "blue",
@@ -21,7 +24,7 @@ const override = {
 
 const SignInPage = () => {
   const [loading, setLoading] = useState(false);
-  const { user, signIn } = UserAuth();
+  const { signIn } = UserAuth();
   const router = useRouter();
   const {
     handleSubmit,
@@ -155,7 +158,7 @@ const SignInPage = () => {
               </button>
             )}
             <div className="text-center">
-              <p>Don't have an account yet? </p>
+              <p>Don`&apos`t have an account yet? </p>
               <Link href="/signup">
                 <p className="font-medium w-fit mx-auto">Sign up</p>
               </Link>

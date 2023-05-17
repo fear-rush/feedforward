@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import Layout from "components/Layout";
 import { AuthContextProvider } from "context/AuthContext";
+import { LocationContextProvider } from "../../context/LocationContext";
 import { useRouter } from "next/router";
 import ProtectedRoute from "components/ProtectedRoute";
 // import { Roboto } from "next/font/google";
@@ -24,15 +25,17 @@ export default function App({ Component, pageProps }) {
   return (
     <main className={`${roboto.variable} font-sans`}>
       <AuthContextProvider>
-        <Layout>
-          {noAuthRoutePages.includes(router.pathname) ? (
-            <Component {...pageProps} />
-          ) : (
-            <ProtectedRoute>
+        <LocationContextProvider>
+          <Layout>
+            {noAuthRoutePages.includes(router.pathname) ? (
               <Component {...pageProps} />
-            </ProtectedRoute>
-          )}
-        </Layout>
+            ) : (
+              <ProtectedRoute>
+                <Component {...pageProps} />
+              </ProtectedRoute>
+            )}
+          </Layout>
+        </LocationContextProvider>
       </AuthContextProvider>
     </main>
   );

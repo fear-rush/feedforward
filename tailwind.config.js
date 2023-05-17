@@ -22,6 +22,10 @@ module.exports = {
         mint: "#c7ddcc",
         navy: "#16123f",
       },
+      boxShadow: {
+        cardshadow: '0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        buttonshadow: '4.0px 8.0px 8.0px rgba(0,0,0,0.38)',
+      }
     },
   },
   plugins: [],

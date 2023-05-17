@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useState, useRef } from "react";
 import { getFcmToken } from "utils/firebase-get-token";
-import Layout from "components/Layout";
 import { useForm, Controller } from "react-hook-form";
 import { db, storage } from "../../utils/firebaseconfig";
 import {
@@ -28,6 +27,7 @@ import { UserAuth } from "context/AuthContext";
 import { useRouter } from "next/router";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import MyForm from "../../components/MyForm";
 export default function Home() {
   const [foodData, setFoodData] = useState([]);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
@@ -52,7 +52,7 @@ export default function Home() {
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, formState },
     control,
   } = useForm();
 
@@ -195,7 +195,7 @@ export default function Home() {
         const distanceInM = distanceInKm * 1000;
         if (distanceInM <= radiusInM) {
           locationSnapshot.push(doc.data());
-          console.log(`${doc.id} => ${doc.data().locationName}`);
+          console.log(`${doc.id} => ${doc.data().foodName}`);
         }
       });
     }
@@ -437,6 +437,7 @@ export default function Home() {
           LOGOUT
         </button>
       {/* </Layout> */}
+      <MyForm />
     </>
   );
 }
