@@ -3,13 +3,12 @@ import { db } from "../../../utils/firebaseconfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import FoodDetailView from "../../../components/FoodDetail/FoodDetailView";
+import FabButton from "../../../components/Button/FabButton";
 
 const FoodDetail = () => {
   const [foodData, setFoodData] = useState("");
   const [foodFetchLoading, setFoodFetchLoading] = useState(true);
   const router = useRouter();
-
-  // const foodDocRef = doc(db)
 
   useEffect(() => {
     let unmounted = false;
@@ -21,7 +20,10 @@ const FoodDetail = () => {
           if (unmounted) return;
 
           if (foodDocumentSnapshot.exists()) {
-            const fetchedFoodData = foodDocumentSnapshot.data();
+            const fetchedFoodData = {
+              givenFoodId: foodDocumentSnapshot.id,
+              ...foodDocumentSnapshot.data(),
+            };
             setFoodData(fetchedFoodData);
             setFoodFetchLoading(false);
           } else {
@@ -40,7 +42,6 @@ const FoodDetail = () => {
     if (router.isReady) {
       getFoodDocument();
       console.log(foodData);
-
     }
 
     return () => {
@@ -50,13 +51,8 @@ const FoodDetail = () => {
 
   return (
     <>
-      {foodFetchLoading ? (
-        <div>loading</div>
-      ) : (
-        <FoodDetailView
-          {...foodData}
-        />
-      )}
+      {foodFetchLoading ? <div>loading</div> : <FoodDetailView {...foodData} />}
+      <FabButton />
     </>
   );
 };

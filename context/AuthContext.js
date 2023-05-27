@@ -8,11 +8,9 @@ import {
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { db, auth } from "utils/firebaseconfig";
-// import { useRouter } from "next/router";
 
 const UserContext = createContext();
 
-// const router = useRouter();
 const storeCustomerId = async (userUid, username, email) => {
   await setDoc(doc(db, "user", userUid), {
     id: userUid,
@@ -22,7 +20,8 @@ const storeCustomerId = async (userUid, username, email) => {
 };
 
 export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState();
+  const [userAuthLoading, setUserAuthLoading] = useState(true);
 
   const signUp = async (username, email, password) => {
     try {
@@ -52,12 +51,19 @@ export const AuthContextProvider = ({ children }) => {
   const logOut = () => {
     // signOut(auth).then(() => router.replace("/signin"));
     signOut(auth);
+    setUser(null);
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (curentUser) => {
-      setUser(curentUser);
-      // console.log(curentUser);
+    setUserAuthLoading(true);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        setUserAuthLoading(false);
+      } else {
+        setUser(null);
+        setUserAuthLoading(false);
+      }
     });
     return () => {
       unsubscribe();
@@ -65,7 +71,9 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ signUp, user, logOut, signIn }}>
+    <UserContext.Provider
+      value={{ signUp, user, logOut, signIn, userAuthLoading }}
+    >
       {children}
     </UserContext.Provider>
   );

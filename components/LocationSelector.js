@@ -17,8 +17,8 @@ function LocationSelector({
   setValue,
 }) {
   const [error, setError] = useState(null);
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
+  const { isLoaded, loadError } = useJsApiLoader({
+    // id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 

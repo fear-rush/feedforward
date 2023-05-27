@@ -13,7 +13,7 @@ import mobilelogo from "../public/header/mobilelogo.png";
 import desktoplogo from "../public/header/desktoplogo.png";
 
 function Layout({ children }) {
-  const { user, logOut } = UserAuth();
+  const { user, userAuthLoading, logOut } = UserAuth();
   const router = useRouter();
 
   return (
@@ -45,7 +45,10 @@ function Layout({ children }) {
             </Link>
           </div>
 
-          {user ? (
+          {/* add loader */}
+          {!user && userAuthLoading ? (
+            null
+          ) : user && !userAuthLoading ? (
             <Menu as="div" className="inline-block text-left">
               <div className="items-center justify-center gap-4 lg:flex">
                 <div className="hidden lg:block">
@@ -79,7 +82,7 @@ function Layout({ children }) {
                     </Menu.Item>
                     <Menu.Item as="div" className="hover:bg-gray-100">
                       <div>
-                        <Link href="/purchase">
+                        <Link href="/profile">
                           <p className="block px-3 py-2 text-sm font-medium text-gray-700">
                             Profile
                           </p>
@@ -161,7 +164,7 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      <main className="container mx-auto mb-auto mt-4 min-h-screen max-w-screen-xl lg:px-4 border-red-500 border-2">
+      <main className="container mx-auto mb-24 mt-4 min-h-screen max-w-screen-xl lg:px-4 lg:mb-32">
         {children}
       </main>
     </>

@@ -1,33 +1,44 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { getDocs, collection, where, query } from "firebase/firestore";
+
 import FoodCard from "../../components/Card/FoodCard";
 import ShareFoodButton from "../../components/Button/ShareFoodButton";
-import { db, storage } from "../../utils/firebaseconfig";
-import { getDocs, collection } from "firebase/firestore";
 import SkeletonFoodCard from "../../components/Card/SkeletonFoodCard";
+
+import { db } from "../../utils/firebaseconfig";
 import { UserLocation } from "../../context/LocationContext";
+import { UserAuth } from "../../context/AuthContext";
+import FabButton from "../../components/Button/FabButton";
 
 const DashboardPage = () => {
   const [allFoodData, setAllFoodData] = useState([]);
   const { userLocation } = UserLocation();
+  const { user, userAuthLoading } = UserAuth();
   const [foodFetchLoading, setFoodFetchLoading] = useState(true);
   const skeletonPlaceholder = Array(8).fill(0);
 
   useEffect(() => {
-    console.log("mounted");
+
     let unmounted = false; // flag to set if component if unmounted then rebort fetch
-    const allFoodCollectionRef = collection(db, "allfood");
 
     const getAllFoodCollection = () => {
-      getDocs(allFoodCollectionRef)
+      const allFoodCollectionQuery = query(
+        collection(db, "food"),
+        where("giverId", "!=", user?.uid)
+      );
+      getDocs(allFoodCollectionQuery)
         .then((allFoodCollectionSnapshot) => {
           if (unmounted) return;
 
           if (allFoodCollectionSnapshot.docs.length > 0) {
-            const newData = allFoodCollectionSnapshot.docs.map((doc) => {
-              return { id: doc.id, ...doc.data() };
-            });
-            setAllFoodData(newData);
+            const availableFood = allFoodCollectionSnapshot.docs
+              .filter((doc) => doc.data().foodStatus === "available")
+              .map((foodData) => {
+                return { id: foodData.id, ...foodData.data() };
+              });
+
+            setAllFoodData(availableFood);
             setFoodFetchLoading(false);
           } else {
             setAllFoodData([]);
@@ -35,7 +46,7 @@ const DashboardPage = () => {
           }
         })
         .catch((err) => {
-          // error handling toast
+          // error handling toastass
           console.log(err);
         });
     };
@@ -47,13 +58,17 @@ const DashboardPage = () => {
       });
     }
 
-    getAllFoodCollection();
+    if (!userAuthLoading) {
+      getAllFoodCollection();
+    }
 
+    getAllFoodCollection();
     return () => {
-      console.log("unmounted");
       unmounted = true;
     };
-  }, []);
+  }, [userAuthLoading]);
+
+  console.log(allFoodData);
 
   return (
     <>
@@ -67,12 +82,8 @@ const DashboardPage = () => {
             ))}
       </div>
 
-      <ShareFoodButton />
-      {userLocation.longitude === 0 ? (
-        <h1>Denied</h1>
-      ) : (
-        <h1>{userLocation.latitude}</h1>
-      )}
+      {/* <ShareFoodButton /> */}
+      <FabButton />
     </>
   );
 };

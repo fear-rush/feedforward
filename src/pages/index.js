@@ -27,7 +27,7 @@ import { UserAuth } from "context/AuthContext";
 import { useRouter } from "next/router";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import MyForm from "../../components/MyForm";
+import FabButton from "../../components/Button/FabButton";
 export default function Home() {
   const [foodData, setFoodData] = useState([]);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
@@ -48,6 +48,8 @@ export default function Home() {
 
   const { user, logOut } = UserAuth();
   const router = useRouter();
+
+  console.log(user.uid)
 
   const {
     handleSubmit,
@@ -273,6 +275,8 @@ export default function Home() {
       getUserLocation();
     }
   }, [user]);
+
+
   return (
     <>
       {/* <Layout> */}
@@ -437,7 +441,7 @@ export default function Home() {
           LOGOUT
         </button>
       {/* </Layout> */}
-      <MyForm />
+      <FabButton />
     </>
   );
 }

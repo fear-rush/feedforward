@@ -1,11 +1,7 @@
-import React, { Fragment, useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import React, { Fragment, useState } from "react";
 import { useRouter } from "next/router";
-
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm, Controller } from "react-hook-form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -15,6 +11,7 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import DatePicker from "react-datepicker";
@@ -25,7 +22,7 @@ import { UserAuth } from "../../context/AuthContext";
 import LocationSelector from "../LocationSelector";
 import "react-datepicker/dist/react-datepicker.css";
 
-const ShareFoodButton = () => {
+const FabButton = () => {
   const [foodData, setFoodData] = useState([]);
   const [position, setPosition] = useState({
     lat: -7.772721510854569,
@@ -39,6 +36,7 @@ const ShareFoodButton = () => {
   const [isFoodShareSuccess, setIsFoodShareSuccess] = useState(false);
   const { user } = UserAuth();
   const router = useRouter();
+  const batch = writeBatch(db);
 
   const {
     register,
@@ -189,7 +187,6 @@ const ShareFoodButton = () => {
         setIsFoodShareSuccess(false);
       });
   };
-
   return (
     <>
       <ToastContainer
@@ -218,16 +215,120 @@ const ShareFoodButton = () => {
         theme="light"
         className="lg:hidden"
       />
-      <div className="fixed bottom-4 right-5 w-[50px] h-[50px] bg-teal flex justify-center items-center rounded-full cursor-pointer shadow-buttonshadow transition ease-in-out delay-150 duration-300 hover:bg-darkteal">
-        <FontAwesomeIcon
-          icon={faPlus}
-          size="1x"
-          color="#fff"
-          onClick={() => {
-            setIsShareFoodModalOpen(true);
-            console.log("adas");
-          }}
-        />
+      {/* <div className="fixed bottom-4 right-5 w-[50px] h-[50px] bg-teal flex justify-center items-center rounded-full cursor-pointer shadow-buttonshadow transition ease-in-out delay-150 duration-300 hover:bg-darkteal">
+      <FontAwesomeIcon
+        icon={faPlus}
+        size="1x"
+        color="#fff"
+        onClick={() => {
+          setIsShareFoodModalOpen(true);
+          console.log("adas");
+        }}
+      />
+    </div> */}
+
+      <div class="fixed z-10 w-screen sm:w-[500px] h-20 -translate-x-1/2 bg-gray-50 border border-gray-200 sm:rounded-full bottom-0 lg:bottom-4 left-1/2">
+        <div class="grid h-full max-w-lg grid-cols-3 mx-auto">
+          <button
+            data-tooltip-target="tooltip-home"
+            type="button"
+            class="group inline-flex flex-col items-center justify-center px-5 rounded-l-full hover:bg-gray-100 group"
+            onClick={() => router.push("/dashboard")}
+          >
+            <svg
+              class="w-8 h-8 mb-1 text-gray-500  group-hover:text-blue-600 "
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+            </svg>
+            <div class="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 -top-10 group-hover:opacity-100 px-3 pointer-events-none">
+              Dashboard
+              <svg
+                class="absolute text-black h-2 w-full left-0 top-full"
+                x="0px"
+                y="0px"
+                viewBox="0 0 255 255"
+              >
+                <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+              </svg>
+            </div>
+          </button>
+
+          <div class="flex flex-col items-center justify-center">
+            <button
+              data-tooltip-target="tooltip-new"
+              type="button"
+              class="group inline-flex items-center justify-center w-12 h-12 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none"
+              onClick={() => {
+                setIsShareFoodModalOpen(true);
+              }}
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                ></path>
+              </svg>
+              <div class="opacity-0 w-36 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 -top-10 group-hover:opacity-100 px-3 pointer-events-none">
+                Bagikan Makanan
+                <svg
+                  class="absolute text-black h-2 w-full left-0 top-full"
+                  x="0px"
+                  y="0px"
+                  viewBox="0 0 255 255"
+                >
+                  <polygon
+                    class="fill-current"
+                    points="0,0 127.5,127.5 255,0"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <button
+            data-tooltip-target="tooltip-profile"
+            type="button"
+            class="group inline-flex flex-col items-center justify-center px-5 rounded-r-full hover:bg-gray-100 group"
+            onClick={() => router.push("/profile")}
+          >
+            <svg
+              class="w-8 h-8 mb-1 text-gray-500  group-hover:text-blue-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                clip-rule="evenodd"
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+              ></path>
+            </svg>
+            <span class="sr-only">Profile</span>
+            <div class="opacity-0 w-28 bg-black text-white text-center text-xs rounded-lg py-2 absolute z-10 -top-10 group-hover:opacity-100 px-3 pointer-events-none">
+              Profile
+              <svg
+                class="absolute text-black h-2 w-full left-0 top-full"
+                x="0px"
+                y="0px"
+                viewBox="0 0 255 255"
+              >
+                <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+              </svg>
+            </div>
+          </button>
+        </div>
       </div>
 
       {foodShareLoading && !isFoodShareSuccess && (
@@ -283,7 +384,8 @@ const ShareFoodButton = () => {
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Makanan berhasil dibagikan. Terima kasih atas keinginan anda untuk membagikan makanan.
+                        Makanan berhasil dibagikan. Terima kasih atas keinginan
+                        anda untuk membagikan makanan.
                       </p>
                     </div>
 
@@ -336,7 +438,7 @@ const ShareFoodButton = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md lg:max-w-3xl border-2 border-red-500 transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="relative z-50 w-full max-w-md lg:max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
@@ -532,4 +634,4 @@ const ShareFoodButton = () => {
   );
 };
 
-export default ShareFoodButton;
+export default FabButton;

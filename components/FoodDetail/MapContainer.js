@@ -2,9 +2,8 @@ import React, { useRef, useEffect, useCallback, useState } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import { UserLocation } from "../../context/LocationContext";
 
-
 const MapContainer = ({ latitude, longitude }) => {
-  const { userLocation } = UserLocation();
+  const { memoizedUserLocation: userLocation } = UserLocation();
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -28,10 +27,11 @@ const MapContainer = ({ latitude, longitude }) => {
       disableDefaultUI: true,
       streetViewControl: false,
       zoomControl: true,
-    })
+    });
   }, []);
 
   // add loader and error handle
+  // check user location is allowed or not
   return isLoaded ? (
     <GoogleMap mapContainerStyle={mapContainerStyle} onLoad={onLoad}>
       <MarkerF position={center} />

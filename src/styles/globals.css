@@ -31,6 +31,58 @@ a {
   text-decoration: none;
 }
 
+.fab {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.fab:hover {
+  background-color: #444;
+}
+
+.profile-icon {
+  color: #fff;
+}
+
+.home-icon {
+  color: #fff;
+}
+
+.modal {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  max-width: 90vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem;
+  z-index: 100;
+}
+
+
+.app-bar {
+  background-color: #333;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
 .primary-button {
   @apply rounded-lg bg-lightlime text-sm font-medium text-white hover:bg-darklime;
 }
