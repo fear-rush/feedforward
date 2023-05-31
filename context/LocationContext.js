@@ -5,15 +5,14 @@ import {
   useEffect,
   useState,
   useMemo,
-  useCallback,
 } from "react";
 
 const LocationContext = createContext(null);
 
 export const LocationContextProvider = ({ children }) => {
   const [userLocation, setUserLocation] = useState({
-    latitude: 0,
-    longitude: 0,
+    latitude: undefined,
+    longitude: undefined,
     isAllowed: false,
   });
 
@@ -29,16 +28,20 @@ export const LocationContextProvider = ({ children }) => {
     };
     // callback on error navigator.geolocation.getCurrentPosition
     const getLocationError = () => {
-      alert("Unable to retrieve your location");
-     
+      // alert("Unable to retrieve your location");
+      setUserLocation({
+        latitude: undefined,
+        longitude: undefined,
+        isAllowed: false,
+      });
     };
     // add timeout when user have slow internet access
     if (!navigator.geolocation) {
       // add error handler on geolocation not supported by browser
-      alert("Geolocation is not supported by your browser");
+      // alert("Geolocation is not supported by your browser");
       setUserLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+        latitude: undefined,
+        longitude: undefined,
         isAllowed: false,
       });
     } else {
@@ -54,17 +57,37 @@ export const LocationContextProvider = ({ children }) => {
     };
   }, []);
 
-  // to memoize userLocation value
-  const memoizedUserLocation = useMemo(
-    () => ({
-      memoizedUserLocation: userLocation,
-    }),
-    [userLocation.latitude, userLocation.longitude]
-  );
+  const getUserLocation = () => new Promise((resolve,reject)=> {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log(position);
+        resolve(position);
+      },
+      error => {
+        // console.log(error.message);
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 1000
+      }
+    );
+  });
 
+
+  // to memoize userLocation value
+  // turns out when memoized, it won't set to current user location value
+  // when user is disable location access and then enable it later
+  // const memoizedUserLocation = useMemo(
+  //   () => ({
+  //     memoizedUserLocation: userLocation,
+  //   }),
+  //   [userLocation.latitude, userLocation.longitude]
+  // );
 
   return (
-    <LocationContext.Provider value={{ memoizedUserLocation }}>
+    <LocationContext.Provider value={{ userLocation, getUserLocation }}>
       {children}
     </LocationContext.Provider>
   );

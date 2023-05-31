@@ -1,21 +1,14 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  doc,
-  collection,
-  Timestamp,
-  getDoc,
-  writeBatch,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, Timestamp, getDoc, updateDoc } from "firebase/firestore";
 import { BeatLoader } from "react-spinners";
 
 import { UserAuth } from "../../context/AuthContext";
+import { db } from "../../utils/firebaseconfig";
 import { shimmerBlurDataURL } from "../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../lib/unixdatetostringformat";
-import { db } from "../../utils/firebaseconfig";
 import { getTimeAgo } from "../../lib/gettimeago";
 
 import MapContainer from "./MapContainer";
@@ -32,16 +25,13 @@ const FoodDetailView = ({
   addressDescription,
   latitude,
   longitude,
-  givenFoodId,
-  foodStatus,
-  geohash,
+  foodId,
 }) => {
   const [isFoodConfirmationModalOpen, setIsFoodConfirmationModalOpen] =
     useState(false);
   const { user } = UserAuth();
   const [isGettingFoodLoading, setIsGettingFoodLoading] = useState(false);
   const router = useRouter();
-  const batch = writeBatch(db);
   const override = {
     borderColor: "blue",
     marginTop: "1rem",
@@ -54,59 +44,15 @@ const FoodDetailView = ({
 
   const takeFoodHandler = async () => {
     setIsGettingFoodLoading(true);
-    const giverFoodDocumentRef = doc(db, "user", giverId, "food", givenFoodId);
-    // const takerFoodCollectionRef = collection(
-    //   db,
-    //   "user",
-    //   user.uid,
-    //   "takenFood"
-    // );
-
     try {
-      const giverFoodDocument = await getDoc(giverFoodDocumentRef);
-      if (giverFoodDocument.data().foodStatus !== "available") {
+      const foodDocument = await getDoc(db, "food", foodId);
+      if (foodDocument.data().foodStatus !== "available") {
         // add toast food is already taken or processed
         setIsGettingFoodLoading(false);
         return;
       }
 
-      // const takenFoodDoc = doc(takerFoodCollectionRef);
-      // batch.set(takenFoodDoc, {
-      //   addressDescription,
-      //   dateAdded,
-      //   foodDescription,
-      //   foodName,
-      //   foodStatus: "onprocess",
-      //   takerName: user.displayName,
-      //   takerId: user.uid,
-      //   dateTaken: Timestamp.now(),
-      //   geohash,
-      //   giver,
-      //   giverId,
-      //   images,
-      //   latitude,
-      //   longitude,
-      //   pickupAddress,
-      //   takenBeforeDate,
-      //   givenFoodId,
-      // });
-
-      // batch.update(giverFoodDocumentRef, {
-      //   foodStatus: "onprocess",
-      //   takerName: user.displayName,
-      //   takerId: user.uid,
-      //   takenFoodId: takenFoodDoc.id,
-      //   dateTaken: Timestamp.now(),
-      //   givenFoodId,
-      // });
-      const foodDocumentRef = doc(db, "food", givenFoodId);
-      // batch.update(allFoodDocumentRef, {
-      //   foodStatus: "onprocess",
-      //   takerName: user.displayName,
-      //   takerId: user.uid,
-      //   takenFoodId: takenFoodDoc.id,
-      //   dateTaken: Timestamp.now(),
-      // });
+      const foodDocumentRef = doc(db, "food", foodId);
 
       await updateDoc(foodDocumentRef, {
         foodStatus: "onprocess",
@@ -115,7 +61,6 @@ const FoodDetailView = ({
         dateTaken: Timestamp.now(),
       });
 
-      await batch.commit();
       console.log("success");
       setIsGettingFoodLoading(false);
       router.push("/profile");

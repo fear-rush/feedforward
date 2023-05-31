@@ -1,12 +1,16 @@
 import { useState, Fragment } from "react";
 import Image from "next/image";
-import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
-import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
-import { db } from "../../../utils/firebaseconfig";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
-import { Dialog, Transition } from "@headlessui/react";
-import { BeatLoader } from "react-spinners";
 import { useRouter } from "next/router";
+import { Dialog, Transition } from "@headlessui/react";
+import { doc, Timestamp, updateDoc } from "firebase/firestore";
+import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+
+import { UserAuth } from "../../../context/AuthContext";
+import { db } from "../../../utils/firebaseconfig";
+import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
+import { BeatLoader } from "react-spinners";
+
+import Messages from "../../Chat/Messages";
 
 const OnProcessTakenCard = ({
   images,
@@ -15,10 +19,7 @@ const OnProcessTakenCard = ({
   latitude,
   longitude,
   giver,
-  givenFoodId,
-  takenFoodId,
   giverId,
-  takerId,
   foodId,
   addressDescription,
 }) => {
@@ -30,28 +31,16 @@ const OnProcessTakenCard = ({
   ] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const router = useRouter();
+  const { user: currentUser } = UserAuth();
+  const combinedChatId =
+    currentUser.uid > giverId
+      ? currentUser.uid + giverId
+      : giverId + currentUser.uid;
 
   const foodPickupConfirmationHandler = async () => {
     setPickupConfirmationLoading(true);
-    // const giverFoodDocumentRef = doc(db, "user", giverId, "food", givenFoodId);
-    // const takerFoodDocumentRef = doc(
-    //   db,
-    //   "user",
-    //   takerId,
-    //   "takenFood",
-    //   takenFoodId
-    // );
 
     try {
-      // await updateDoc(giverFoodDocumentRef, {
-      //   foodStatus: "taken",
-      //   dateTaken: Timestamp.now(),
-      // });
-
-      // await updateDoc(takerFoodDocumentRef, {
-      //   foodStatus: "taken",
-      //   dateTaken: Timestamp.now(),
-      // });
       const foodDocumentRef = doc(db, "food", foodId);
       await updateDoc(foodDocumentRef, {
         foodStatus: "taken",
@@ -64,6 +53,10 @@ const OnProcessTakenCard = ({
       setPickupConfirmationLoading(false);
       console.log(err);
     }
+  };
+
+  const contactGiverHandler = () => {
+    setIsChatModalOpen(true);
   };
 
   const override = {
@@ -150,6 +143,7 @@ const OnProcessTakenCard = ({
             <button
               type="button"
               className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
+              onClick={contactGiverHandler}
             >
               Hubungi Pemberi
             </button>
@@ -230,6 +224,7 @@ const OnProcessTakenCard = ({
               <button
                 type="button"
                 className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
+                onClick={() => setIsChatModalOpen(true)}
               >
                 Hubungi Pemberi
               </button>
@@ -313,6 +308,13 @@ const OnProcessTakenCard = ({
           </div>
         </Dialog>
       </Transition>
+
+      <Messages
+        isChatModalOpen={isChatModalOpen}
+        setIsChatModalOpen={setIsChatModalOpen}
+        combinedChatId={combinedChatId}
+        giver={giver}
+      />
     </>
   );
 };

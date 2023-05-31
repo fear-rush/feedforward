@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+
 import { UserAuth } from "context/AuthContext";
 
 const ProtectedRoute = ({ children }) => {
@@ -10,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
     if (!user && !userAuthLoading) {
       router.push("/");
     }
-  }, [user, userAuthLoading]);
+  }, [user?.uid, userAuthLoading]);
 
   // return <>{user?.uid && !userAuthLoading ? children : <h1>PLease Login</h1>}</>;
 

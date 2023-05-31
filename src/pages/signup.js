@@ -1,12 +1,13 @@
-import React, { useState, Fragment } from "react";
+import { useState, Fragment } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { UserAuth } from "context/AuthContext";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import { Transition, Dialog } from "@headlessui/react";
-import Image from "next/image";
 import { BeatLoader } from "react-spinners";
+
+import { UserAuth } from "context/AuthContext";
 
 import "react-toastify/dist/ReactToastify.css";
 import splitframe from "../../public/signin/frame2.png";
@@ -21,7 +22,7 @@ const override = {
 const SignUpPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user, signUp, signIn } = UserAuth();
+  const { signUp } = UserAuth();
   const router = useRouter();
   const {
     handleSubmit,

@@ -27,7 +27,6 @@ import { UserAuth } from "context/AuthContext";
 import { useRouter } from "next/router";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import FabButton from "../../components/Button/FabButton";
 export default function Home() {
   const [foodData, setFoodData] = useState([]);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
@@ -36,7 +35,7 @@ export default function Home() {
     latitude: 0,
     longitude: 0,
   });
-  
+
   const [imageDownloadURL, setImageDownloadURL] = useState([]);
 
   // imageListRef disesuaikan sama document id
@@ -49,7 +48,7 @@ export default function Home() {
   const { user, logOut } = UserAuth();
   const router = useRouter();
 
-  console.log(user.uid)
+  console.log(user.uid);
 
   const {
     handleSubmit,
@@ -177,10 +176,12 @@ export default function Home() {
 
     const center = [userLocation.latitude, userLocation.longitude];
     // const center = [-7.798676243221753, 110.3927648451548];
-    const radiusInM = rangeSliderValue * 1000;
+    // const radiusInM = rangeSliderValue * 1000;
 
-    const bounds = geofire.geohashQueryBounds(center, radiusInM);
+    const bounds = geofire.geohashQueryBounds(center, 1000);
+    console.log(bounds);
     const locationSnapshot = [];
+    const locationWithoutSnapshot = [];
     for (const b of bounds) {
       const q = query(
         collection(db, "allfood"),
@@ -190,16 +191,28 @@ export default function Home() {
       );
 
       const querySnapshot = await getDocs(q);
+      console.log(b);
       querySnapshot.forEach((doc) => {
         const lat = doc.data().latitude;
         const lng = doc.data().longitude;
         const distanceInKm = geofire.distanceBetween([lat, lng], center);
         const distanceInM = distanceInKm * 1000;
-        if (distanceInM <= radiusInM) {
-          locationSnapshot.push(doc.data());
-          console.log(`${doc.id} => ${doc.data().foodName}`);
-        }
+        console.log(doc.data().pickupAddress + distanceInM);
       });
+
+      // const querySnapshot = await getDocs(q);
+      // querySnapshot.forEach((doc) => {
+      //   const lat = doc.data().latitude;
+      //   const lng = doc.data().longitude;
+      //   const distanceInKm = geofire.distanceBetween([lat, lng], center);
+      //   const distanceInM = distanceInKm * 1000;
+      //   if (distanceInM <= radiusInM) {
+      //     locationSnapshot.push(doc.data());
+      //     console.log(`${doc.id} => ${doc.data().foodName} ${distanceInM}`);
+      //   } else {
+      //     console.log(`${doc.id} => ${doc.data().foodName} normal ${distanceInM}`);
+      //   }
+      // });
     }
   };
   useEffect(() => {
@@ -276,172 +289,166 @@ export default function Home() {
     }
   }, [user]);
 
-
   return (
     <>
       {/* <Layout> */}
-        <h1 className="text-lg font-bold">Notification Example</h1>
-        <form noValidate onSubmit={handleSubmit(submitHandler)}>
-          <div>
-            <input
-              type="text"
-              {...register("foodTitle", {
-                required: "Please enter a food title",
-              })}
-              id="foodTitle"
-              placeholder="foodTitle"
-              className="border-2 border-blue-500"
-            ></input>
-            {errors.foodTitle && (
-              <div className="text-red-500">{errors.foodTitle.message}</div>
-            )}
-          </div>
-          <div>
-            <input
-              type="foodDescription"
-              {...register("foodDescription", {
-                required: "Please enter a food description",
-              })}
-              id="foodDescription"
-              placeholder="foodDescription"
-              className="mt-2 border-2 border-blue-500"
-            ></input>
-            {errors.foodDescription && (
-              <div className="text-red-500">
-                {errors.foodDescription.message}
-              </div>
-            )}
-          </div>
-          <div className="mt-4">
-            <input
-              type="text"
-              {...register("locationName", {
-                required: "Please enter a valid locationName",
-              })}
-              id="locationName"
-              placeholder="locationName"
-              className="border-2 border-blue-500"
-            ></input>
-            {errors.locationName && (
-              <div className="text-red-500">{errors.locationName.message}</div>
-            )}
-          </div>
-          <div>
-            <input
-              type="text"
-              {...register("latitude", {
-                required: "Please enter a valid latitude",
-              })}
-              id="latitude"
-              placeholder="latitude"
-              className="border-2 border-blue-500"
-            ></input>
-            {errors.latitude && (
-              <div className="text-red-500">{errors.latitude.message}</div>
-            )}
-          </div>
-          <div>
-            <input
-              type="longitude"
-              {...register("longitude", {
-                required: "Please enter a valid longitude",
-              })}
-              id="longitude"
-              placeholder="longitude"
-              className="mt-2 border-2 border-blue-500"
-            ></input>
-            {errors.longitude && (
-              <div className="text-red-500">{errors.longitude.message}</div>
-            )}
-          </div>
-          <div>
-            <Controller
-              control={control}
-              name="expiredDate"
-              render={({ field: { onChange, value } }) => (
-                <DatePicker
-                  selected={value}
-                  onChange={onChange}
-                  dateFormat="dd MMMM yyyy"
-                  placeholderText="Select Expired Date"
-                  className="border-2 border-red-500"
-                  minDate={new Date()}
-                />
-              )}
-            />
-          </div>
+      <h1 className="text-lg font-bold">Notification Example</h1>
+      <form noValidate onSubmit={handleSubmit(submitHandler)}>
+        <div>
           <input
-            type="file"
-            multiple
-            {...register("images", {
-              required: "Please upload at least one image",
+            type="text"
+            {...register("foodTitle", {
+              required: "Please enter a food title",
             })}
-            id="images"
-            className="mt-2"
+            id="foodTitle"
+            placeholder="foodTitle"
+            className="border-2 border-blue-500"
           ></input>
-          {errors.images && (
-            <div className="text-red-500">{errors.images.message}</div>
+          {errors.foodTitle && (
+            <div className="text-red-500">{errors.foodTitle.message}</div>
           )}
-
-          <button className="border-2 border-red-500 mt-2 cursor-pointer">
-            Submit
-          </button>
-        </form>
-        <button
-          onClick={topicSubscribeHandler}
-          className="mt-6 border-2 border-yellow-500"
-        >
-          {isPermissionGranted
-            ? "UNSUBSCRIBE FROM TOPIC"
-            : "SUBSCRIBE TO TOPIC"}
-        </button>
-        <div className="mt-6">
-          {foodData.map((food, index) => (
-            <div className="mt-2" key={index}>
-              <h1>{food.foodTitle}</h1>
-              <h1>{food.foodDescription}</h1>
-              <h1>{food.locationName}</h1>
-            </div>
-          ))}
         </div>
         <div>
           <input
-            type="range"
-            min="5"
-            max="50"
-            defaultValue={rangeSliderValue}
-            className="ml-10"
-            onChange={(e) => setRangeSliderValue(e.target.value)}
+            type="foodDescription"
+            {...register("foodDescription", {
+              required: "Please enter a food description",
+            })}
+            id="foodDescription"
+            placeholder="foodDescription"
+            className="mt-2 border-2 border-blue-500"
           ></input>
+          {errors.foodDescription && (
+            <div className="text-red-500">{errors.foodDescription.message}</div>
+          )}
         </div>
-        <h1>{rangeSliderValue}</h1>
-        {userLocation.latitude !== 0 ? (
-          <h1>
-            {userLocation.latitude} & {userLocation.longitude}
-          </h1>
-        ) : (
-          <h1>Kosong</h1>
+        <div className="mt-4">
+          <input
+            type="text"
+            {...register("locationName", {
+              required: "Please enter a valid locationName",
+            })}
+            id="locationName"
+            placeholder="locationName"
+            className="border-2 border-blue-500"
+          ></input>
+          {errors.locationName && (
+            <div className="text-red-500">{errors.locationName.message}</div>
+          )}
+        </div>
+        <div>
+          <input
+            type="text"
+            {...register("latitude", {
+              required: "Please enter a valid latitude",
+            })}
+            id="latitude"
+            placeholder="latitude"
+            className="border-2 border-blue-500"
+          ></input>
+          {errors.latitude && (
+            <div className="text-red-500">{errors.latitude.message}</div>
+          )}
+        </div>
+        <div>
+          <input
+            type="longitude"
+            {...register("longitude", {
+              required: "Please enter a valid longitude",
+            })}
+            id="longitude"
+            placeholder="longitude"
+            className="mt-2 border-2 border-blue-500"
+          ></input>
+          {errors.longitude && (
+            <div className="text-red-500">{errors.longitude.message}</div>
+          )}
+        </div>
+        <div>
+          <Controller
+            control={control}
+            name="expiredDate"
+            render={({ field: { onChange, value } }) => (
+              <DatePicker
+                selected={value}
+                onChange={onChange}
+                dateFormat="dd MMMM yyyy"
+                placeholderText="Select Expired Date"
+                className="border-2 border-red-500"
+                minDate={new Date()}
+              />
+            )}
+          />
+        </div>
+        <input
+          type="file"
+          multiple
+          {...register("images", {
+            required: "Please upload at least one image",
+          })}
+          id="images"
+          className="mt-2"
+        ></input>
+        {errors.images && (
+          <div className="text-red-500">{errors.images.message}</div>
         )}
-        <button
-          type="button"
-          className="bg-yellow-500 ml-6 cursor-pointer"
-          onClick={filterByRangeHandler}
-        >
-          Submit Range
-        </button>
 
-        <button
-          className="mt-6 border-2 border-blue-500"
-          type="button"
-          onClick={() => {
-            logOut();
-            router.push("/signin");
-          }}
-        >
-          LOGOUT
+        <button className="border-2 border-red-500 mt-2 cursor-pointer">
+          Submit
         </button>
+      </form>
+      <button
+        onClick={topicSubscribeHandler}
+        className="mt-6 border-2 border-yellow-500"
+      >
+        {isPermissionGranted ? "UNSUBSCRIBE FROM TOPIC" : "SUBSCRIBE TO TOPIC"}
+      </button>
+      <div className="mt-6">
+        {foodData.map((food, index) => (
+          <div className="mt-2" key={index}>
+            <h1>{food.foodTitle}</h1>
+            <h1>{food.foodDescription}</h1>
+            <h1>{food.locationName}</h1>
+          </div>
+        ))}
+      </div>
+      <div>
+        <input
+          type="range"
+          min="5"
+          max="50"
+          defaultValue={rangeSliderValue}
+          className="ml-10"
+          onChange={(e) => setRangeSliderValue(e.target.value)}
+        ></input>
+      </div>
+      <h1>{rangeSliderValue}</h1>
+      {userLocation.latitude !== 0 ? (
+        <h1>
+          {userLocation.latitude} & {userLocation.longitude}
+        </h1>
+      ) : (
+        <h1>Kosong</h1>
+      )}
+      <button
+        type="button"
+        className="bg-yellow-500 ml-6 cursor-pointer"
+        onClick={filterByRangeHandler}
+      >
+        Submit Range
+      </button>
+
+      <button
+        className="mt-6 border-2 border-blue-500"
+        type="button"
+        onClick={() => {
+          logOut();
+          router.push("/signin");
+        }}
+      >
+        LOGOUT
+      </button>
       {/* </Layout> */}
-      <FabButton />
     </>
   );
 }

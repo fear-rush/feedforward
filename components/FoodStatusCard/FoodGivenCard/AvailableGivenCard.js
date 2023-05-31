@@ -1,12 +1,10 @@
-import React from "react";
 import Image from "next/image";
-import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot, faClock } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../../lib/unixdatetostringformat";
-import { useRouter } from "next/router";
 
 const AvailableGivenCard = ({
   images,

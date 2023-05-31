@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useCallback, useState } from "react";
+import { useCallback } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
+
 import { UserLocation } from "../../context/LocationContext";
 
 const MapContainer = ({ latitude, longitude }) => {

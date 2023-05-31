@@ -1,16 +1,14 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { unixDateToStringFormat } from "../../lib/unixdatetostringformat";
 import {
   faUser,
   faLocationDot,
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { unixDateToStringFormat } from "../../lib/unixdatetostringformat";
 import { shimmerBlurDataURL } from "../../lib/shimmerblurdata";
 
 const FoodCard = ({
@@ -35,6 +33,7 @@ const FoodCard = ({
             blurDataURL={`data:image/svg+xml;base64,${window.btoa(
               shimmerBlurDataURL
             )}`}
+            quality={50}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             l
             style={{

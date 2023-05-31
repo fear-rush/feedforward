@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm, Controller } from "react-hook-form";
@@ -8,22 +8,20 @@ import {
   doc,
   collection,
   addDoc,
-  setDoc,
   Timestamp,
   updateDoc,
-  writeBatch,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import DatePicker from "react-datepicker";
 
-import { db, storage } from "../../utils/firebaseconfig";
 import { UserAuth } from "../../context/AuthContext";
+import { db, storage } from "../../utils/firebaseconfig";
 
 import LocationSelector from "../LocationSelector";
+
 import "react-datepicker/dist/react-datepicker.css";
 
 const FabButton = () => {
-  const [foodData, setFoodData] = useState([]);
   const [position, setPosition] = useState({
     lat: -7.772721510854569,
     lng: 110.37710870153107,
@@ -36,7 +34,6 @@ const FabButton = () => {
   const [isFoodShareSuccess, setIsFoodShareSuccess] = useState(false);
   const { user } = UserAuth();
   const router = useRouter();
-  const batch = writeBatch(db);
 
   const {
     register,
@@ -78,7 +75,7 @@ const FabButton = () => {
 
   const submitFoodHandler = async (data) => {
     const geofire = require("geofire-common");
-    const foodCollectionRef = collection(db, "user", user.uid, "food");
+    const foodCollectionRef = collection(db, "food");
     const latitude = Number(position.lat);
     const longitude = Number(position.lng);
     const hash = geofire.geohashForLocation([latitude, longitude]);
@@ -113,52 +110,10 @@ const FabButton = () => {
           uploadBytes(imageRef, uploadImages[0]).then((snapshot) => {
             getDownloadURL(imageRef)
               .then(async (imageDownloadURL) => {
-                console.log(imageDownloadURL);
-                await setDoc(doc(db, "allfood", foodSnapshot.id), {
-                  foodName: data.foodName,
-                  foodDescription: data.foodDescription,
-                  dateAdded: Timestamp.fromDate(new Date()),
-                  takenBeforeDate: data.takenBeforeDate,
-                  foodStatus: "available",
-                  giver: user.displayName,
-                  giverId: user.uid,
-                  pickupAddress: data.pickupAddress,
-                  addressDescription: data.addressDescription
-                    ? data.addressDescription
-                    : " ",
-                  geohash: hash,
-                  latitude: latitude,
-                  longitude: longitude,
+                await updateDoc(doc(db, "food", foodSnapshot.id), {
                   images: imageDownloadURL,
                 });
 
-                await updateDoc(
-                  doc(db, "user", user.uid, "food", foodSnapshot.id),
-                  {
-                    images: imageDownloadURL,
-                  }
-                );
-
-                setFoodData([
-                  {
-                    foodName: data.foodName,
-                    foodDescription: data.foodDescription,
-                    dateAdded: Timestamp.fromDate(new Date()),
-                    takenBeforeDate: data.takenBeforeDate,
-                    foodStatus: "available",
-                    giver: user.displayName,
-                    giverId: user.uid,
-                    pickupAddress: data.pickupAddress,
-                    addressDescription: data.addressDescription
-                      ? data.addressDescription
-                      : " ",
-                    geohash: hash,
-                    latitude: latitude,
-                    longitude: longitude,
-                    images: imageDownloadURL,
-                  },
-                  ...foodData,
-                ]);
                 setIsShareFoodModalOpen(false);
                 setFoodShareLoading(false);
                 setIsFoodShareSuccess(true);
@@ -215,25 +170,17 @@ const FabButton = () => {
         theme="light"
         className="lg:hidden"
       />
-      {/* <div className="fixed bottom-4 right-5 w-[50px] h-[50px] bg-teal flex justify-center items-center rounded-full cursor-pointer shadow-buttonshadow transition ease-in-out delay-150 duration-300 hover:bg-darkteal">
-      <FontAwesomeIcon
-        icon={faPlus}
-        size="1x"
-        color="#fff"
-        onClick={() => {
-          setIsShareFoodModalOpen(true);
-          console.log("adas");
-        }}
-      />
-    </div> */}
 
       <div class="fixed z-10 w-screen sm:w-[500px] h-20 -translate-x-1/2 bg-gray-50 border border-gray-200 sm:rounded-full bottom-0 lg:bottom-4 left-1/2">
         <div class="grid h-full max-w-lg grid-cols-3 mx-auto">
-          <button
-            data-tooltip-target="tooltip-home"
+          <div
             type="button"
-            class="group inline-flex flex-col items-center justify-center px-5 rounded-l-full hover:bg-gray-100 group"
-            onClick={() => router.push("/dashboard")}
+            class="group inline-flex flex-col items-center justify-center px-5 rounded-l-full hover:bg-gray-100 group cursor-pointer"
+            onClick={() =>
+              router.push({ pathname: "/dashboard" }, undefined, {
+                shallow: true,
+              })
+            }
           >
             <svg
               class="w-8 h-8 mb-1 text-gray-500  group-hover:text-blue-600 "
@@ -255,7 +202,7 @@ const FabButton = () => {
                 <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
               </svg>
             </div>
-          </button>
+          </div>
 
           <div class="flex flex-col items-center justify-center">
             <button
@@ -300,7 +247,12 @@ const FabButton = () => {
             data-tooltip-target="tooltip-profile"
             type="button"
             class="group inline-flex flex-col items-center justify-center px-5 rounded-r-full hover:bg-gray-100 group"
-            onClick={() => router.push("/profile")}
+            // onClick={() => router.push("/profile")}
+            onClick={() =>
+              router.push({ pathname: "/profile" }, undefined, {
+                shallow: true,
+              })
+            }
           >
             <svg
               class="w-8 h-8 mb-1 text-gray-500  group-hover:text-blue-600"

@@ -1,14 +1,6 @@
-import React from "react";
 import Image from "next/image";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faLocationDot,
-  faMapLocationDot,
-  faClock,
-} from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../../lib/unixdatetostringformat";
 

@@ -1,7 +1,5 @@
-import React, { Fragment, useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/router";
-
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm, Controller } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,11 +17,13 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import DatePicker from "react-datepicker";
 
-import { db, storage } from "../../utils/firebaseconfig";
 import { UserAuth } from "../../context/AuthContext";
+import { db, storage } from "../../utils/firebaseconfig";
 
 import LocationSelector from "../LocationSelector";
+
 import "react-datepicker/dist/react-datepicker.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 const ShareFoodButton = () => {
   const [foodData, setFoodData] = useState([]);
@@ -283,7 +283,8 @@ const ShareFoodButton = () => {
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Makanan berhasil dibagikan. Terima kasih atas keinginan anda untuk membagikan makanan.
+                        Makanan berhasil dibagikan. Terima kasih atas keinginan
+                        anda untuk membagikan makanan.
                       </p>
                     </div>
 

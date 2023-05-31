@@ -1,11 +1,10 @@
-import React from "react";
 import Image from "next/image";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../../lib/unixdatetostringformat";
 
 const SuccessGivenCard = ({ images, foodName, takerName, dateTaken }) => {
-  const tanggal = "25 Desember 2021";
   return (
     <>
       {/* SM COMPONENT CARD*/}

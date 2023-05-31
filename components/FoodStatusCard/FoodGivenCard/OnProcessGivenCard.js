@@ -1,9 +1,27 @@
-import React from "react";
+import { useState } from "react";
 import Image from "next/image";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+
+import { UserAuth } from "../../../context/AuthContext";
+
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 
-const OnProcessGivenCard = ({ images, foodName, takerName, pickupAddress }) => {
+import Messages from "../../Chat/Messages";
+
+const OnProcessGivenCard = ({
+  images,
+  foodName,
+  takerName,
+  pickupAddress,
+  takerId,
+}) => {
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const { user: currentUser } = UserAuth();
+  const combinedChatId =
+    currentUser.uid > takerId
+      ? currentUser.uid + takerId
+      : takerId + currentUser.uid;
+
   return (
     <>
       {/* SM COMPONENT CARD*/}
@@ -49,6 +67,7 @@ const OnProcessGivenCard = ({ images, foodName, takerName, pickupAddress }) => {
             </div>
             <button
               type="button"
+              onClick={() => setIsChatModalOpen(true)}
               className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
             >
               Hubungi Penerima
@@ -103,6 +122,7 @@ const OnProcessGivenCard = ({ images, foodName, takerName, pickupAddress }) => {
               <button
                 type="button"
                 className="w-full px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
+                onClickCapture={() => setIsChatModalOpen(true)}
               >
                 Hubungi Penerima
               </button>
@@ -110,6 +130,13 @@ const OnProcessGivenCard = ({ images, foodName, takerName, pickupAddress }) => {
           </div>
         </div>
       </div>
+
+      <Messages
+        isChatModalOpen={isChatModalOpen}
+        setIsChatModalOpen={setIsChatModalOpen}
+        combinedChatId={combinedChatId}
+        taker={takerName}
+      />
     </>
   );
 };

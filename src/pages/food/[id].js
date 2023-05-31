@@ -14,14 +14,14 @@ const FoodDetail = () => {
     let unmounted = false;
 
     const getFoodDocument = () => {
-      const foodDocumentRef = doc(db, "allfood", router.query.id);
+      const foodDocumentRef = doc(db, "food", router.query.id);
       getDoc(foodDocumentRef)
         .then((foodDocumentSnapshot) => {
           if (unmounted) return;
 
           if (foodDocumentSnapshot.exists()) {
             const fetchedFoodData = {
-              givenFoodId: foodDocumentSnapshot.id,
+              foodId: foodDocumentSnapshot.id,
               ...foodDocumentSnapshot.data(),
             };
             setFoodData(fetchedFoodData);

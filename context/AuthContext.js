@@ -7,6 +7,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
+
 import { db, auth } from "utils/firebaseconfig";
 
 const UserContext = createContext();
@@ -58,6 +59,7 @@ export const AuthContextProvider = ({ children }) => {
     setUserAuthLoading(true);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
+        // console.log("hello");
         setUser(currentUser);
         setUserAuthLoading(false);
       } else {
@@ -72,7 +74,13 @@ export const AuthContextProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ signUp, user, logOut, signIn, userAuthLoading }}
+      value={{
+        signUp,
+        user,
+        logOut,
+        signIn,
+        userAuthLoading,
+      }}
     >
       {children}
     </UserContext.Provider>

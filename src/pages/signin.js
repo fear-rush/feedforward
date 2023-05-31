@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
 import { doc, getDoc } from "firebase/firestore";
 import { BeatLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
-
 
 import { UserAuth } from "context/AuthContext";
 import { db } from "utils/firebaseconfig";

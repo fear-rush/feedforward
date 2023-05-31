@@ -25,3 +25,4 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 export { app, db, messaging, auth, storage };
+

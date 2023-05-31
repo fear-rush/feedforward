@@ -1,4 +1,4 @@
-import React, { Children, Fragment } from "react";
+import React, { Fragment } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -164,7 +164,7 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      <main className="container mx-auto mb-24 mt-4 min-h-screen max-w-screen-xl lg:px-4 lg:mb-32">
+      <main className="container mx-auto mb-36 mt-4 min-h-screen max-w-screen-xl lg:px-4 lg:mb-48">
         {children}
       </main>
     </>

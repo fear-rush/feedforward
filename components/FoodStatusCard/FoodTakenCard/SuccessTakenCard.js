@@ -1,6 +1,6 @@
-import React from "react";
 import Image from "next/image";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../../lib/unixdatetostringformat";
 

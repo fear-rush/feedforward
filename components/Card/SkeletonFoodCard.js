@@ -1,5 +1,3 @@
-import React from "react";
-
 const SkeletonFoodCard = () => {
   return (
     <div className="flex flex-col items-center justify-center rounded-lg shadow-cardshadow max-w-[300px]">
