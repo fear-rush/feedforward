@@ -7,7 +7,7 @@ import { BeatLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
-import { UserAuth } from "context/AuthContext";
+import { signIn } from "../../utils/firebaseauth";
 import { db } from "utils/firebaseconfig";
 
 import splitframe from "../../public/signin/frame2.png";
@@ -22,7 +22,7 @@ const override = {
 
 const SignInPage = () => {
   const [loading, setLoading] = useState(false);
-  const { signIn } = UserAuth();
+  // const { signIn } = UserAuth();
   const router = useRouter();
   const {
     handleSubmit,

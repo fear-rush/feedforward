@@ -45,7 +45,8 @@ const FoodDetailView = ({
   const takeFoodHandler = async () => {
     setIsGettingFoodLoading(true);
     try {
-      const foodDocument = await getDoc(db, "food", foodId);
+      console.log(foodId);
+      const foodDocument = await getDoc(doc(db, "food", foodId));
       if (foodDocument.data().foodStatus !== "available") {
         // add toast food is already taken or processed
         setIsGettingFoodLoading(false);
@@ -54,6 +55,7 @@ const FoodDetailView = ({
 
       const foodDocumentRef = doc(db, "food", foodId);
 
+      // use transaction
       await updateDoc(foodDocumentRef, {
         foodStatus: "onprocess",
         takerName: user.displayName,
@@ -94,7 +96,7 @@ const FoodDetailView = ({
           alt="Donated Food Image"
           className="rounded-lg"
           fill
-          sizes="100vw"
+          sizes="50vw"
           placeholder="blur"
           blurDataURL={`data:image/svg+xml;base64,${window.btoa(
             shimmerBlurDataURL

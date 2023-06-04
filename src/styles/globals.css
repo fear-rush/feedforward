@@ -94,3 +94,38 @@ a {
 .form-field {
   @apply h-10 w-full rounded-md border-solid border-gray-300 drop-shadow-md lg:!w-[400px];
 }
+
+.custom-bullet {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+span.swiper-pagination-bullet-active {
+  width: 36px !important;
+  height: 6px !important;
+  border-radius: 1rem !important;
+  background-color: #60a5fa !important;
+}
+
+.swiper-pagination-bullet {
+  width: 36px !important;
+  height: 6px !important;
+  border-radius: 1rem !important;
+  background-color: #d1d5db !important;
+}
+
+@media only screen and (max-width: 640px) {
+  .custom-bullet {
+    gap: 0.5rem;
+  }
+
+  span.swiper-pagination-bullet-active {
+    width: 6px !important;
+  }
+
+  .swiper-pagination-bullet {
+    width: 6px !important;
+  }
+}

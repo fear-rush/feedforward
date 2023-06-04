@@ -1,8 +1,10 @@
 import { useState, Fragment } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import { Dialog, Transition } from "@headlessui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { MapPinIcon } from "@heroicons/react/24/solid";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { useLocation } from "../hooks/useLocation";
 
 const containerStyle = {
   width: "100%",
@@ -16,11 +18,14 @@ function LocationSelector({
   setIsMapModalOpen,
   setValue,
 }) {
+  const queryClient = useQueryClient();
   const [error, setError] = useState(null);
   const { isLoaded, loadError } = useJsApiLoader({
     // id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
+
+  const { isError: islocationError, data: locationData } = useLocation();
 
   const handleMapClick = (event) => {
     setPosition({
@@ -33,7 +38,7 @@ function LocationSelector({
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ location: position }, (results, status) => {
       if (status === "OK") {
-        setValue('pickupAddress', results[0].formatted_address);
+        setValue("pickupAddress", results[0].formatted_address);
         console.log(`address ini ${results[0].formatted_address}`);
         setIsMapModalOpen(false);
       } else {
@@ -43,23 +48,38 @@ function LocationSelector({
   };
 
   const handleFindCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setPosition({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          setError(error.message);
-        }
+    if (!islocationError) {
+      console.log(
+        `location: ${queryClient.getQueryData(["location"]).coords.latitude}`
       );
+      // setPosition({
+      //   lat: locationData?.coords?.latitude,
+      //   lng: locationData?.coords?.longitide,
+      // });
+      setPosition({
+        lat: queryClient.getQueryData(["location"]).coords.latitude,
+        lng: queryClient.getQueryData(["location"]).coords.longitude,
+      });
     } else {
-      setError("Geolocation is not supported by this browser.");
+      setError("Error occured");
     }
-  };
 
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       setPosition({
+    //         lat: position.coords.latitude,
+    //         lng: position.coords.longitude,
+    //       });
+    //     },
+    //     (error) => {
+    //       setError(error.message);
+    //     }
+    //   );
+    // } else {
+    //   setError("Geolocation is not supported by this browser.");
+    // }
+  };
 
   // add loader
   if (!isLoaded) {
@@ -73,7 +93,7 @@ function LocationSelector({
         onClick={() => setIsMapModalOpen(true)}
         type="button"
       >
-        <FontAwesomeIcon icon={faLocationDot} />
+        <MapPinIcon className="h-6 w-6"/>
       </button>
       <Transition show={isMapModalOpen} as={Fragment}>
         <Dialog

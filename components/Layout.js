@@ -3,17 +3,18 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import { UserAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
 import { Menu, Transition } from "@headlessui/react";
+
+import { logOut } from "../utils/firebaseauth";
 
 import mobilelogo from "../public/header/mobilelogo.png";
 import desktoplogo from "../public/header/desktoplogo.png";
 
 function Layout({ children }) {
-  const { user, userAuthLoading, logOut } = UserAuth();
+  const { user, userAuthLoading } = UserAuth();
   const router = useRouter();
 
   return (
@@ -34,21 +35,19 @@ function Layout({ children }) {
                 width={35}
                 height={35}
                 style={{ width: "auto", height: "auto" }}
-                priority={false}
+                priority={true}
               />
             </Link>
           </div>
 
           <div className="block cursor-pointer md:hidden">
             <Link href="/">
-              <Image src={mobilelogo} width={35} height={35} />
+              <Image src={mobilelogo} width={35} height={35} priority={true} />
             </Link>
           </div>
 
           {/* add loader */}
-          {!user && userAuthLoading ? (
-            null
-          ) : user && !userAuthLoading ? (
+          {!user && userAuthLoading ? null : user && !userAuthLoading ? (
             <Menu as="div" className="inline-block text-left">
               <div className="items-center justify-center gap-4 lg:flex">
                 <div className="hidden lg:block">
@@ -57,7 +56,7 @@ function Layout({ children }) {
                   </p>
                 </div>
                 <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700">
-                  <FontAwesomeIcon icon={faBars} size="xl" />
+                  <Bars3Icon className="text-black h-7 w-7" />
                 </Menu.Button>
               </div>
               <Transition
@@ -111,7 +110,7 @@ function Layout({ children }) {
               <Menu as="div" className="inline-block text-left lg:hidden">
                 <div>
                   <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
-                    <FontAwesomeIcon icon={faBars} size="xl" />
+                    <Bars3Icon className="text-black h-7 w-7" />
                   </Menu.Button>
                 </div>
                 <Transition
@@ -164,7 +163,7 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      <main className="container mx-auto mb-36 mt-4 min-h-screen max-w-screen-xl lg:px-4 lg:mb-48">
+      <main className="container mx-auto mb-36 mt-4 min-h-screen max-w-screen-lg lg:px-4 lg:mb-48">
         {children}
       </main>
     </>

@@ -10,7 +10,9 @@ import { db } from "../../../utils/firebaseconfig";
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { BeatLoader } from "react-spinners";
 
-import Messages from "../../Chat/Messages";
+import dynamic from "next/dynamic";
+const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
+// import Messages from "../../Chat/Messages";
 
 const OnProcessTakenCard = ({
   images,
@@ -104,6 +106,7 @@ const OnProcessTakenCard = ({
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
             />
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>
@@ -128,6 +131,14 @@ const OnProcessTakenCard = ({
                 <EllipsisText text={pickupAddress} length={"150"} />
               </p>
             </div>
+            {addressDescription ? (
+              <div className="mt-3">
+                <p className="font-medium">Detil Lokasi</p>
+                <p className="text-gray-700">
+                  <EllipsisText text={addressDescription} length={"50"} />
+                </p>
+              </div>
+            ) : null}
             <button
               type="button"
               className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
@@ -175,6 +186,7 @@ const OnProcessTakenCard = ({
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
             />
           </div>
           <div className="flex items-center justify-evenly">
@@ -203,7 +215,7 @@ const OnProcessTakenCard = ({
                 <div className="mt-3">
                   <p className="font-medium">Detil Lokasi</p>
                   <p className="text-gray-700">
-                    <EllipsisText text={addressDescription} length={"150"} />
+                    <EllipsisText text={addressDescription} length={"50"} />
                   </p>
                 </div>
               ) : null}

@@ -1,8 +1,8 @@
-const SkeletonFoodCard = () => {
+const SkeletonStatusFoodCard = () => {
   return (
-    <div className="flex flex-col md:flex-row md:justify-center md:items-center rounded-lg shadow-cardshadow max-w-[800px]">
-      <div className="animate-pulse">
-        <div className="h-[300px] w-[300px] rounded-t-md bg-gray-300 "></div>
+    <div className="flex flex-col md:flex-row  rounded-lg shadow-cardshadow mt-6">
+      <div className="animate-pulse w-full sm:w-auto">
+        <div className="w-[300px] h-[300px] mx-auto md:mx-0 rounded-t-md bg-gray-300 "></div>
       </div>
       <div className="animate-pulse">
         <div className="flex flex-col justify-center h-[300px] md:w-[380px] p-6">
@@ -16,4 +16,4 @@ const SkeletonFoodCard = () => {
   );
 };
 
-export default SkeletonFoodCard;
+export default SkeletonStatusFoodCard;

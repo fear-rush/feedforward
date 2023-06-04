@@ -1,44 +1,38 @@
 import { Fragment, useState } from "react";
-import { useRouter } from "next/router";
-import { Dialog, Transition } from "@headlessui/react";
-import { useForm, Controller } from "react-hook-form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { BeatLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
+import { Transition, Dialog } from "@headlessui/react";
+import DatePicker from "react-datepicker";
+import { Controller } from "react-hook-form";
+import LocationSelector from "../../LocationSelector";
 import {
   doc,
   collection,
   addDoc,
-  setDoc,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import DatePicker from "react-datepicker";
+import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
 
-import { UserAuth } from "../../context/AuthContext";
-import { db, storage } from "../../utils/firebaseconfig";
-
-import LocationSelector from "../LocationSelector";
+import { UserAuth } from "../../../context/AuthContext";
+import { db, storage } from "../../../utils/firebaseconfig";
 
 import "react-datepicker/dist/react-datepicker.css";
-import 'react-toastify/dist/ReactToastify.css';
 
-const ShareFoodButton = () => {
-  const [foodData, setFoodData] = useState([]);
+const FormModal = ({
+  isShareFoodModalOpen,
+  setIsShareFoodModalOpen,
+  isMapModalOpen,
+  setIsMapModalOpen,
+  setFoodShareLoading,
+  setIsFoodShareSuccess,
+}) => {
   const [position, setPosition] = useState({
     lat: -7.772721510854569,
     lng: 110.37710870153107,
   });
-  const [isShareFoodModalOpen, setIsShareFoodModalOpen] = useState(false);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [isFoodShareSuccessModalOpen, setIsFoodShareSuccessModalOpen] =
-    useState(true);
-  const [foodShareLoading, setFoodShareLoading] = useState(false);
-  const [isFoodShareSuccess, setIsFoodShareSuccess] = useState(false);
+  const [startDate, setStartDate] = useState(null);
   const { user } = UserAuth();
-  const router = useRouter();
 
   const {
     register,
@@ -57,6 +51,8 @@ const ShareFoodButton = () => {
       foodDescription: "",
       takenBeforeDate: "",
       foodStatus: "available",
+      foodType: 0,
+      foodWeight: 0,
       giver: user.displayName,
       giverId: user.uid,
       pickupAddress: "",
@@ -68,19 +64,16 @@ const ShareFoodButton = () => {
     },
   });
 
-  const override = {
-    borderColor: "blue",
-    marginTop: "1rem",
-    marginBottom: "1rem",
-    textAlign: "center",
-    position: "fixed",
-    left: "50%",
-    top: "50%",
+  const filterPassedTime = (time) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    return currentDate.getTime() < selectedDate.getTime();
   };
 
   const submitFoodHandler = async (data) => {
     const geofire = require("geofire-common");
-    const foodCollectionRef = collection(db, "user", user.uid, "food");
+    const foodCollectionRef = collection(db, "food");
     const latitude = Number(position.lat);
     const longitude = Number(position.lng);
     const hash = geofire.geohashForLocation([latitude, longitude]);
@@ -96,6 +89,8 @@ const ShareFoodButton = () => {
       dateAdded: Timestamp.fromDate(new Date()),
       takenBeforeDate: data.takenBeforeDate,
       foodStatus: "available",
+      foodType: data.foodType,
+      foodWeight: data.foodWeight,
       giver: user.displayName,
       giverId: user.uid,
       pickupAddress: data.pickupAddress,
@@ -115,52 +110,10 @@ const ShareFoodButton = () => {
           uploadBytes(imageRef, uploadImages[0]).then((snapshot) => {
             getDownloadURL(imageRef)
               .then(async (imageDownloadURL) => {
-                console.log(imageDownloadURL);
-                await setDoc(doc(db, "allfood", foodSnapshot.id), {
-                  foodName: data.foodName,
-                  foodDescription: data.foodDescription,
-                  dateAdded: Timestamp.fromDate(new Date()),
-                  takenBeforeDate: data.takenBeforeDate,
-                  foodStatus: "available",
-                  giver: user.displayName,
-                  giverId: user.uid,
-                  pickupAddress: data.pickupAddress,
-                  addressDescription: data.addressDescription
-                    ? data.addressDescription
-                    : " ",
-                  geohash: hash,
-                  latitude: latitude,
-                  longitude: longitude,
+                await updateDoc(doc(db, "food", foodSnapshot.id), {
                   images: imageDownloadURL,
                 });
 
-                await updateDoc(
-                  doc(db, "user", user.uid, "food", foodSnapshot.id),
-                  {
-                    images: imageDownloadURL,
-                  }
-                );
-
-                setFoodData([
-                  {
-                    foodName: data.foodName,
-                    foodDescription: data.foodDescription,
-                    dateAdded: Timestamp.fromDate(new Date()),
-                    takenBeforeDate: data.takenBeforeDate,
-                    foodStatus: "available",
-                    giver: user.displayName,
-                    giverId: user.uid,
-                    pickupAddress: data.pickupAddress,
-                    addressDescription: data.addressDescription
-                      ? data.addressDescription
-                      : " ",
-                    geohash: hash,
-                    latitude: latitude,
-                    longitude: longitude,
-                    images: imageDownloadURL,
-                  },
-                  ...foodData,
-                ]);
                 setIsShareFoodModalOpen(false);
                 setFoodShareLoading(false);
                 setIsFoodShareSuccess(true);
@@ -218,95 +171,6 @@ const ShareFoodButton = () => {
         theme="light"
         className="lg:hidden"
       />
-      <div className="fixed bottom-4 right-5 w-[50px] h-[50px] bg-teal flex justify-center items-center rounded-full cursor-pointer shadow-buttonshadow transition ease-in-out delay-150 duration-300 hover:bg-darkteal">
-        <FontAwesomeIcon
-          icon={faPlus}
-          size="1x"
-          color="#fff"
-          onClick={() => {
-            setIsShareFoodModalOpen(true);
-            console.log("adas");
-          }}
-        />
-      </div>
-
-      {foodShareLoading && !isFoodShareSuccess && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-25"></div>
-          <BeatLoader
-            color="#000"
-            loading={foodShareLoading}
-            cssOverride={override}
-            size={15}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
-        </>
-      )}
-
-      {!foodShareLoading && isFoodShareSuccess && (
-        <Transition appear show={isFoodShareSuccessModalOpen} as={Fragment}>
-          <Dialog
-            as="div"
-            className="relative z-10"
-            onClose={() => setIsFoodShareSuccessModalOpen(false)}
-          >
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
-                    >
-                      Konfirmasi pembagian makanan
-                    </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Makanan berhasil dibagikan. Terima kasih atas keinginan
-                        anda untuk membagikan makanan.
-                      </p>
-                    </div>
-
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={() => {
-                          setIsFoodShareSuccessModalOpen(false);
-                          router.reload();
-                        }}
-                      >
-                        OK
-                      </button>
-                    </div>
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
-      )}
 
       <Transition appear show={isShareFoodModalOpen} as={Fragment}>
         <Dialog
@@ -337,7 +201,7 @@ const ShareFoodButton = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md lg:max-w-3xl border-2 border-red-500 transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="relative z-50 w-full max-w-md lg:max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
@@ -385,8 +249,51 @@ const ShareFoodButton = () => {
                         )}
                       </div>
                       <div className="mb-4">
+                        <label htmlFor="foodType" className="block">
+                          Tipe Makanan (opsional)
+                        </label>
+                        <select
+                          {...register("foodType")}
+                          id="foodType"
+                          name="foodType"
+                          className="w-full border-2 p-2 rounded-lg mt-1 overflow-scroll"
+                        >
+                          <option selected value={0}>
+                            Kosongkan
+                          </option>
+                          <option value={1}>
+                            Makanan dengan minimal proses (buah, sayur, daging,
+                            jagung)
+                          </option>
+                          <option value={2}>
+                            Bahan pangan olahan industri (garam, gula, minyak)
+                          </option>
+                          <option value={3}>
+                            Makanan olahan (asinan, keju, daging asap)
+                          </option>
+                          <option value={4}>
+                            Makanan ultra proses (mie instan, minuman bersoda,
+                            sereal)
+                          </option>
+                        </select>
+                      </div>
+                      <div className="mb-4">
+                        <label htmlFor="foodName" className="block">
+                          Berat Makanan (opsional)
+                        </label>
+                        <input
+                          type="number"
+                          {...register("foodWeight")}
+                          id="foodWeight"
+                          placeholder="300"
+                          className="w-1/5 border-2 p-2 rounded-lg mt-1"
+                        ></input>
+                        <span className="ml-2">Gram</span>
+                      </div>
+
+                      <div className="mb-4">
                         <label htmlFor="takenBeforeDate" className="block">
-                          Bisa Diambil Sebelum
+                          Dapat Diambil Sebelum
                         </label>
                         <Controller
                           control={control}
@@ -396,10 +303,16 @@ const ShareFoodButton = () => {
                           }}
                           render={({ field: { onChange, value } }) => (
                             <DatePicker
-                              selected={value}
-                              onChange={onChange}
-                              value={value}
-                              dateFormat="dd MMMM yyyy"
+                              onChange={(date) => {
+                                setStartDate(date);
+                                onChange(date);
+                              }}
+                              selected={startDate}
+                              value={startDate}
+                              dateFormat="dd MMMM yyyy HH:mm"
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              filterTime={filterPassedTime}
                               placeholderText="Select Date"
                               className="min-w-full border-2 p-2 rounded-lg mt-1"
                               minDate={new Date()}
@@ -533,4 +446,4 @@ const ShareFoodButton = () => {
   );
 };
 
-export default ShareFoodButton;
+export default FormModal;

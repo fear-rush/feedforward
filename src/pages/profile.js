@@ -3,9 +3,14 @@ import { Tab } from "@headlessui/react";
 
 import { UserAuth } from "../../context/AuthContext";
 
-import GivenFoodTab from "../../components/Tab/GivenFoodTab";
-import TakenFoodTab from "../../components/Tab/TakenFoodTab";
-import FabButton from "../../components/Button/FabButton";
+import dynamic from "next/dynamic";
+
+const GivenFoodTab = dynamic(() => import("../../components/Tab/GivenFoodTab"), {ssr: false})
+const TakenFoodTab = dynamic(() => import("../../components/Tab/TakenFoodTab"), {ssr: false})
+const FabButton = dynamic(() => import("../../components/Button/FabButton"), {ssr: false})
+
+
+// import FabButton from "../../components/Button/FabButton";
 
 const ProfilePage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
 
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
@@ -9,12 +8,13 @@ import { unixDateToStringFormat } from "../../../lib/unixdatetostringformat";
 const AvailableGivenCard = ({
   images,
   foodName,
-  id,
   takenBeforeDate,
   pickupAddress,
   foodId,
 }) => {
-  const router = useRouter();
+
+  console.log(takenBeforeDate.seconds);
+
   return (
     <>
       {/* SM COMPONENT CARD*/}
@@ -34,6 +34,7 @@ const AvailableGivenCard = ({
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
             />
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>
@@ -61,16 +62,19 @@ const AvailableGivenCard = ({
                 <EllipsisText text={pickupAddress} length={"150"} />
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => router.push(`/food/${foodId}`)}
-              className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
-            >
-              Detail Makanan
-            </button>
+            <Link href={`/food/${foodId}`}>
+              <button
+                type="button"
+                className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
+              >
+                Detil Makanan
+              </button>
+            </Link>
           </div>
         </div>
       </div>
+
+    
 
       {/* LG COMPONENT CARD */}
       <div className="hidden lg:block rounded-lg shadow-cardshadow mt-4">
@@ -89,6 +93,7 @@ const AvailableGivenCard = ({
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
             />
           </div>
           <div className="flex items-center justify-evenly">
@@ -118,14 +123,12 @@ const AvailableGivenCard = ({
               </div>
             </div>
             <div className="w-64 mr-2">
-              <Link
-                href={`/food/${foodId}`}
-              >
+              <Link href={`/food/${foodId}`}>
                 <button
                   type="button"
                   className="block backdrop:w-3/4 mx-auto px-6 py-2 bg-blue-100 hover:bg-200 rounded-lg text-gray-900 cursor-pointer my-3"
                 >
-                  Detail Makanan
+                  Detil Makanan
                 </button>
               </Link>
             </div>

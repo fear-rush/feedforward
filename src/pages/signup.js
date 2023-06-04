@@ -7,7 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { Transition, Dialog } from "@headlessui/react";
 import { BeatLoader } from "react-spinners";
 
-import { UserAuth } from "context/AuthContext";
+import { signUp } from "../../utils/firebaseauth";
+
 
 import "react-toastify/dist/ReactToastify.css";
 import splitframe from "../../public/signin/frame2.png";
@@ -22,13 +23,11 @@ const override = {
 const SignUpPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signUp } = UserAuth();
   const router = useRouter();
   const {
     handleSubmit,
     register,
     formState: { errors },
-    getValues,
   } = useForm();
 
   const submitHandler = async (data) => {

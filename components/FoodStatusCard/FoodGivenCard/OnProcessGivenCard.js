@@ -6,7 +6,9 @@ import { UserAuth } from "../../../context/AuthContext";
 
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 
-import Messages from "../../Chat/Messages";
+import dynamic from "next/dynamic";
+const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
+// import Messages from "../../Chat/Messages";
 
 const OnProcessGivenCard = ({
   images,
@@ -41,6 +43,7 @@ const OnProcessGivenCard = ({
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
             />
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>

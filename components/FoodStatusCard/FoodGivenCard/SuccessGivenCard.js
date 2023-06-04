@@ -24,6 +24,8 @@ const SuccessGivenCard = ({ images, foodName, takerName, dateTaken }) => {
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
+
             />
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>
@@ -63,6 +65,8 @@ const SuccessGivenCard = ({ images, foodName, takerName, dateTaken }) => {
               style={{
                 objectFit: "cover",
               }}
+              priority={true}
+
             />
           </div>
           <div className="flex items-center justify-evenly">

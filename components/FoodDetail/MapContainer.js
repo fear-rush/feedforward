@@ -1,10 +1,7 @@
 import { useCallback } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 
-import { UserLocation } from "../../context/LocationContext";
-
 const MapContainer = ({ latitude, longitude }) => {
-  const { memoizedUserLocation: userLocation } = UserLocation();
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -36,13 +33,6 @@ const MapContainer = ({ latitude, longitude }) => {
   return isLoaded ? (
     <GoogleMap mapContainerStyle={mapContainerStyle} onLoad={onLoad}>
       <MarkerF position={center} />
-      <MarkerF
-        icon={{
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 5,
-        }}
-        position={{ lat: userLocation.latitude, lng: userLocation.longitude }}
-      />
       <h1>Loading...</h1>
     </GoogleMap>
   ) : (

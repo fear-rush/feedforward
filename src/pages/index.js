@@ -15,6 +15,8 @@ import {
   endAt,
   Timestamp,
   updateDoc,
+  where,
+  limit,
 } from "firebase/firestore";
 import {
   ref,
@@ -47,8 +49,6 @@ export default function Home() {
 
   const { user, logOut } = UserAuth();
   const router = useRouter();
-
-  console.log(user.uid);
 
   const {
     handleSubmit,
@@ -176,43 +176,52 @@ export default function Home() {
 
     const center = [userLocation.latitude, userLocation.longitude];
     // const center = [-7.798676243221753, 110.3927648451548];
-    // const radiusInM = rangeSliderValue * 1000;
+    const radiusInM = rangeSliderValue * 1000;
 
-    const bounds = geofire.geohashQueryBounds(center, 1000);
+    console.log(userLocation.latitude)
+    console.log(userLocation.longitude);
+
+    const bounds = geofire.geohashQueryBounds(center, radiusInM);
     console.log(bounds);
     const locationSnapshot = [];
     const locationWithoutSnapshot = [];
     for (const b of bounds) {
       const q = query(
-        collection(db, "allfood"),
+        collection(db, "food"),
+        where("foodStatus", "==", "available"),
         orderBy("geohash"),
         startAt(b[0]),
-        endAt(b[1])
+        endAt(b[1]),
       );
 
-      const querySnapshot = await getDocs(q);
-      console.log(b);
-      querySnapshot.forEach((doc) => {
-        const lat = doc.data().latitude;
-        const lng = doc.data().longitude;
-        const distanceInKm = geofire.distanceBetween([lat, lng], center);
-        const distanceInM = distanceInKm * 1000;
-        console.log(doc.data().pickupAddress + distanceInM);
-      });
-
       // const querySnapshot = await getDocs(q);
+      // console.log(b);
       // querySnapshot.forEach((doc) => {
       //   const lat = doc.data().latitude;
       //   const lng = doc.data().longitude;
       //   const distanceInKm = geofire.distanceBetween([lat, lng], center);
       //   const distanceInM = distanceInKm * 1000;
-      //   if (distanceInM <= radiusInM) {
-      //     locationSnapshot.push(doc.data());
-      //     console.log(`${doc.id} => ${doc.data().foodName} ${distanceInM}`);
-      //   } else {
-      //     console.log(`${doc.id} => ${doc.data().foodName} normal ${distanceInM}`);
-      //   }
+      //   console.log(doc.data().pickupAddress + distanceInM);
       // });
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        if (doc.data().giverId !== user.uid) {
+          const lat = doc.data().latitude;
+          const lng = doc.data().longitude;
+          const distanceInKm = geofire.distanceBetween([lat, lng], center);
+          const distanceInM = distanceInKm * 1000;
+          if (distanceInM <= radiusInM) {
+            locationSnapshot.push(doc.data());
+            console.log(`${doc.id} => ${doc.data().foodName} ${distanceInM}`);
+          } 
+          else {
+            console.log(
+              `${doc.id} => ${doc.data().foodName} normal ${distanceInM}`
+            );
+          }
+        }
+      });
     }
   };
   useEffect(() => {
