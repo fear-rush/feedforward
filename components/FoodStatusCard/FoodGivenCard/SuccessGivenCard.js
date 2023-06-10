@@ -30,7 +30,7 @@ const SuccessGivenCard = ({ images, foodName, takerName, dateTaken }) => {
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>
           <p className="inline-block ml-4 px-4 py-1 font-extralight text-sm bg-green-200 mt-3 rounded-xl">
-            Diambil pada {unixDateToStringFormat(dateTaken.seconds)}
+            Diambil pada {unixDateToStringFormat(dateTaken._seconds)}
           </p>
           <div className="min-w-full px-6 py-3">
             <div className="text-ellipsis text-lg font-semibold leading-6">
@@ -72,7 +72,7 @@ const SuccessGivenCard = ({ images, foodName, takerName, dateTaken }) => {
           <div className="flex items-center justify-evenly">
             <div className="flex-1">
               <p className="inline-block mb-3 font-extralight text-sm p-2 rounded-lg bg-green-200">
-                Diambil pada {unixDateToStringFormat(dateTaken.seconds)}
+                Diambil pada {unixDateToStringFormat(dateTaken._seconds)}
               </p>
               <div className="text-ellipsis text-lg font-semibold leading-6">
                 <h1>

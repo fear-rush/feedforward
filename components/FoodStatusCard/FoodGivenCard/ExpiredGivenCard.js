@@ -10,7 +10,6 @@ const ExpiredGivenCard = ({
   takenBeforeDate,
   pickupAddress,
 }) => {
-  const tanggal = "25 Desember 2021";
   return (
     <>
       {/* SM COMPONENT CARD*/}
@@ -31,7 +30,6 @@ const ExpiredGivenCard = ({
                 objectFit: "cover",
               }}
               priority={true}
-
             />
           </div>
           <div className="border-[1px] my-2 border-gray-200"></div>
@@ -48,7 +46,7 @@ const ExpiredGivenCard = ({
               <p className="font-medium">Baik Diambil Sebelum</p>
               <p className="text-gray-700">
                 <EllipsisText
-                  text={unixDateToStringFormat(takenBeforeDate.seconds)}
+                  text={unixDateToStringFormat(takenBeforeDate._seconds)}
                   length={"100"}
                 />
               </p>
@@ -81,7 +79,6 @@ const ExpiredGivenCard = ({
                 objectFit: "cover",
               }}
               priority={true}
-
             />
           </div>
           <div className="flex items-center justify-evenly">
@@ -98,7 +95,7 @@ const ExpiredGivenCard = ({
                 <p className="font-medium">Baik Diambil Sebelum</p>
                 <p className="text-gray-700">
                   <EllipsisText
-                    text={unixDateToStringFormat(takenBeforeDate.seconds)}
+                    text={unixDateToStringFormat(takenBeforeDate._seconds)}
                     length={"100"}
                   />
                 </p>

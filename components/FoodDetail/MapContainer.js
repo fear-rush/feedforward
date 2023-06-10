@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 
 const MapContainer = ({ latitude, longitude }) => {
-
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
@@ -28,15 +27,13 @@ const MapContainer = ({ latitude, longitude }) => {
     });
   }, []);
 
-  // add loader and error handle
-  // check user location is allowed or not
+ 
   return isLoaded ? (
     <GoogleMap mapContainerStyle={mapContainerStyle} onLoad={onLoad}>
       <MarkerF position={center} />
-      <h1>Loading...</h1>
     </GoogleMap>
   ) : (
-    <></>
+    <h1 className="h-full text-center mx-auto">Loading ...</h1>
   );
 };
 

@@ -2,16 +2,16 @@ import { Fragment, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
-import { doc, Timestamp, getDoc, updateDoc } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { BeatLoader } from "react-spinners";
 
 import { UserAuth } from "../../context/AuthContext";
-import { db } from "../../utils/firebaseconfig";
 import { shimmerBlurDataURL } from "../../lib/shimmerblurdata";
 import { unixDateToStringFormat } from "../../lib/unixdatetostringformat";
 import { getTimeAgo } from "../../lib/gettimeago";
 
 import MapContainer from "./MapContainer";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const FoodDetailView = ({
   images,
@@ -30,8 +30,8 @@ const FoodDetailView = ({
   const [isFoodConfirmationModalOpen, setIsFoodConfirmationModalOpen] =
     useState(false);
   const { user } = UserAuth();
-  const [isGettingFoodLoading, setIsGettingFoodLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const override = {
     borderColor: "blue",
     marginTop: "1rem",
@@ -42,44 +42,49 @@ const FoodDetailView = ({
     top: "50%",
   };
 
-  const takeFoodHandler = async () => {
-    setIsGettingFoodLoading(true);
-    try {
-      console.log(foodId);
-      const foodDocument = await getDoc(doc(db, "food", foodId));
-      if (foodDocument.data().foodStatus !== "available") {
-        // add toast food is already taken or processed
-        setIsGettingFoodLoading(false);
-        return;
-      }
-
-      const foodDocumentRef = doc(db, "food", foodId);
-
-      // use transaction
-      await updateDoc(foodDocumentRef, {
-        foodStatus: "onprocess",
-        takerName: user.displayName,
-        takerId: user.uid,
-        dateTaken: Timestamp.now(),
+  const { mutate, isLoading, isError } = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.DEV_URL}/sendPickupNotification`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Acecess-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          foodName: foodName,
+          takerName: user.displayName,
+          foodId: foodId,
+          takerId: user.uid,
+          dateTaken: Timestamp.now(),
+          giverId: giverId,
+        }),
       });
+    },
+    onSuccess: () => {
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["foodList"] }),
+        queryClient.invalidateQueries({ queryKey: ["takenFoodList"] }),
+      ]);
+      router.replace("/profile");
+    },
+    onError: (error) => {
+      throw new Error(error);
+    },
+  });
 
-      console.log("success");
-      setIsGettingFoodLoading(false);
-      router.push("/profile");
-    } catch (err) {
-      // add error handler toast
-      console.log(err);
-      setIsGettingFoodLoading(true);
-    }
-  };
 
-  if (isGettingFoodLoading)
+  if (isError) {
+    return <h1>Food is not available</h1>;
+  }
+
+  if (isLoading)
     return (
       <>
         <div className="fixed inset-0 bg-black bg-opacity-25"></div>
         <BeatLoader
           color="#000"
-          loading={isGettingFoodLoading}
+          loading={isLoading}
           cssOverride={override}
           size={15}
           aria-label="Loading Spinner"
@@ -113,14 +118,14 @@ const FoodDetailView = ({
           <div className="flex flex-1 flex-col justify-center items-center p-2">
             <p className="font-medium">{giver}</p>
             <p className="font-extralight">{`Dibagikan ${getTimeAgo(
-              dateAdded.seconds
+              dateAdded._seconds
             )}`}</p>
           </div>
           <div className="border-[1px] border-gray-200 min-w-full"></div>
           <div className="flex flex-1 flex-col justify-center items-center p-2">
             <p className="font-medium">Baik Diambil Sebelum</p>
             <p className="font-extralight">
-              {unixDateToStringFormat(takenBeforeDate.seconds)}
+              {unixDateToStringFormat(takenBeforeDate._seconds)}
             </p>
           </div>
         </div>
@@ -206,7 +211,7 @@ const FoodDetailView = ({
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={takeFoodHandler}
+                      onClick={mutate}
                     >
                       Ambil
                     </button>

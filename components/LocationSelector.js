@@ -21,7 +21,6 @@ function LocationSelector({
   const queryClient = useQueryClient();
   const [error, setError] = useState(null);
   const { isLoaded, loadError } = useJsApiLoader({
-    // id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 
@@ -50,35 +49,15 @@ function LocationSelector({
   const handleFindCurrentLocation = () => {
     if (!islocationError) {
       console.log(
-        `location: ${queryClient.getQueryData(["location"]).coords.latitude}`
+        `location: ${queryClient.getQueryData(["location"]).latitude}`
       );
-      // setPosition({
-      //   lat: locationData?.coords?.latitude,
-      //   lng: locationData?.coords?.longitide,
-      // });
       setPosition({
-        lat: queryClient.getQueryData(["location"]).coords.latitude,
-        lng: queryClient.getQueryData(["location"]).coords.longitude,
+        lat: queryClient.getQueryData(["location"]).latitude,
+        lng: queryClient.getQueryData(["location"]).longitude,
       });
     } else {
       setError("Error occured");
     }
-
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       setPosition({
-    //         lat: position.coords.latitude,
-    //         lng: position.coords.longitude,
-    //       });
-    //     },
-    //     (error) => {
-    //       setError(error.message);
-    //     }
-    //   );
-    // } else {
-    //   setError("Geolocation is not supported by this browser.");
-    // }
   };
 
   // add loader
@@ -93,7 +72,7 @@ function LocationSelector({
         onClick={() => setIsMapModalOpen(true)}
         type="button"
       >
-        <MapPinIcon className="h-6 w-6"/>
+        <MapPinIcon className="h-6 w-6" />
       </button>
       <Transition show={isMapModalOpen} as={Fragment}>
         <Dialog

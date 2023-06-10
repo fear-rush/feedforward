@@ -51,7 +51,7 @@ const AvailableGivenCard = ({
               <p className="font-medium">Baik Diambil Sebelum</p>
               <p className="text-gray-700">
                 <EllipsisText
-                  text={unixDateToStringFormat(takenBeforeDate.seconds)}
+                  text={unixDateToStringFormat(takenBeforeDate._seconds)}
                   length={"100"}
                 />
               </p>
@@ -110,7 +110,7 @@ const AvailableGivenCard = ({
                 <p className="font-medium">Baik Diambil Sebelum</p>
                 <p className="text-gray-700">
                   <EllipsisText
-                    text={unixDateToStringFormat(takenBeforeDate.seconds)}
+                    text={unixDateToStringFormat(takenBeforeDate._seconds)}
                     length={"100"}
                   />
                 </p>

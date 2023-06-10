@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { db } from "../utils/firebaseconfig";
-import { collection, getDocs } from "firebase/firestore";
 
 const getArticle = async () => {
   try {
-    const article = await getDocs(collection(db, "article"));
-    const articleData = article.docs.map((doc) => doc.data());
+    const res = await fetch(
+      `${process.env.DEV_URL}/getArticle`
+    );
+    const article = await res.json();
+    const articleData = article.data;
     return articleData;
   } catch (err) {
-    throw err;
+    throw new Error(err);
   }
 };
 

@@ -19,9 +19,14 @@ const ArticleSlider = () => {
     isError: isArticleError,
     data: articleData,
     isLoading: isArticleLoading,
+    error,
   } = useArticle();
 
-  // const isArticleLoading = true;
+  if (isArticleError) {
+    return (
+      <h1 className="text-center">Error Loading Article {error.message}</h1>
+    );
+  }
 
   return (
     <div className="px-6">
@@ -33,6 +38,9 @@ const ArticleSlider = () => {
           slidesPerView="auto"
           spaceBetween={20}
           loop={true}
+          autoplay={{
+            delay: 5000,
+          }}
           pagination={{
             clickable: true,
             el: ".custom-bullet",

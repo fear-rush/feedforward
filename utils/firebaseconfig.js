@@ -21,7 +21,7 @@ const firebaseConfig = {
   storageBucket: "feed-forward-187f4.appspot.com",
   messagingSenderId: "185567387995",
   appId: "1:185567387995:web:b64116d5779e60a769ba7e",
-  measurementId: "G-RLZMCWDH8C"
+  measurementId: "G-RLZMCWDH8C",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -35,4 +35,3 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 export { app, db, messaging, auth, storage };
-

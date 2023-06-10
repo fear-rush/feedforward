@@ -9,7 +9,6 @@ import { BeatLoader } from "react-spinners";
 
 import { signUp } from "../../utils/firebaseauth";
 
-
 import "react-toastify/dist/ReactToastify.css";
 import splitframe from "../../public/signin/frame2.png";
 
@@ -87,7 +86,7 @@ const SignUpPage = () => {
         <div className="m-auto">
           <div className="text-center">
             <h1 className="mb-6 text-4xl font-extrabold lg:pl-9 lg:text-left">
-              Sign Up
+              Halaman Daftar
             </h1>
           </div>
           <form
@@ -160,16 +159,13 @@ const SignUpPage = () => {
               />
             ) : (
               <button className="secondary-button block px-5 py-2.5 mx-auto mb-4">
-                Sign Up
+                Daftar
               </button>
             )}
-            {/* <button className="secondary-button block px-5 py-2.5 mx-auto mb-4">
-              Sign Up
-            </button> */}
             <div className="text-center">
-              <p>Already have an account? </p>
+              <p>Sudah punya akun? </p>
               <Link href="/signin">
-                <p className="font-medium w-fit mx-auto">Sign in</p>
+                <p className="font-medium w-fit mx-auto">Masuk</p>
               </Link>
             </div>
           </form>
@@ -210,13 +206,12 @@ const SignUpPage = () => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Account succesfully created
+                    Akun berhasil dibuat
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Your account has been successfully created. Please
-                      redirect to sign in page and sign in with credentials that
-                      you{`&apos`}ve been submitted.
+                      Akun anda berhasil dibuat. Silakan masuk menggunakan akun
+                      yang telah anda buat
                     </p>
                   </div>
 
@@ -225,17 +220,17 @@ const SignUpPage = () => {
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 text-center my-auto"
                       onClick={() => {
-                        router.replace("/signin")
+                        router.replace("/signin");
                       }}
                     >
-                      Go to sign in page
+                      Menuju halaman masuk
                     </button>
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 text-center my-auto"
                       onClick={() => setIsOpen(false)}
                     >
-                      Close
+                      Tutup
                     </button>
                   </div>
                 </Dialog.Panel>

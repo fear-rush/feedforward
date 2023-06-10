@@ -1,73 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../../utils/firebaseconfig";
-import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import FoodDetailView from "../../../components/FoodDetail/FoodDetailView";
-// import FabButton from "../../../components/Button/FabButton";
 import dynamic from "next/dynamic";
+import { useFoodById } from "../../../hooks/useFoodById";
+import { TrashIcon } from "@heroicons/react/24/outline";
 const FabButton = dynamic(
   () => import("../../../components/Button/FabButton"),
   { ssr: false }
 );
 
 const FoodDetail = () => {
-  const [foodData, setFoodData] = useState("");
-  const [foodFetchLoading, setFoodFetchLoading] = useState(true);
-  const [foodDetailError, setFoodDetailError] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    let unmounted = false;
+  const { isError, data: foodData, isLoading } = useFoodById(router.query.id);
 
-    const getFoodDocument = () => {
-      const foodDocumentRef = doc(db, "food", router.query.id);
-      getDoc(foodDocumentRef)
-        .then((foodDocumentSnapshot) => {
-          if (unmounted) return;
-
-          if (
-            foodDocumentSnapshot.exists() &&
-            foodDocumentSnapshot.data().foodStatus === "available"
-          ) {
-            const fetchedFoodData = {
-              foodId: foodDocumentSnapshot.id,
-              ...foodDocumentSnapshot.data(),
-            };
-            setFoodData(fetchedFoodData);
-            setFoodFetchLoading(false);
-          } else {
-            // add error handling on non-existed document
-            setFoodFetchLoading(false);
-            setFoodDetailError(true);
-            console.log("Document Not Found");
-          }
-        })
-        .catch((err) => {
-          // add error handling on error
-          console.log(err);
-          setFoodFetchLoading(false);
-          setFoodDetailError(true);
-        });
-    };
-
-    if (router.isReady) {
-      getFoodDocument();
-      console.log(foodData);
-    }
-
-    return () => {
-      unmounted = true;
-    };
-  }, [router.isReady, router.query]);
-
-  if (foodDetailError) {
-    // add food detail error
-    return <h1>Makanan Tidak Tersedia</h1>
+  if (isError) {
+    return (
+      <div className="mx-auto text-center mt-12">
+        <TrashIcon className="w-16 h-16 text-black mx-auto" />
+        <h1 className="mt-4 text-lg">Maaf, Makanan Tidak Tersedia</h1>
+        <button
+          type="button"
+          className="bg-blue-400 px-2 py-1 hover:bg-blue-500 text-white rounded-lg mt-2 cursor-pointer"
+          onClick={() => router.push("/dashboard")}
+        >
+          Kembali ke Home
+        </button>
+        <FabButton />
+      </div>
+    );
   }
 
   return (
     <>
-      {foodFetchLoading ? <div>loading</div> : <FoodDetailView {...foodData} />}
+    {/* add Loader */}
+      {isLoading ? <div>loading</div> : <FoodDetailView {...foodData} />}
       <FabButton />
     </>
   );

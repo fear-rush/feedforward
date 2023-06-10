@@ -43,7 +43,7 @@ const FoodCard = ({
           <p className="font-medium">Dapat diambil sebelum</p>
           <p className="text-gray-700">
             <EllipsisText
-              text={unixDateToStringFormat(takenBeforeDate.seconds)}
+              text={unixDateToStringFormat(takenBeforeDate._seconds)}
               length={"40"}
             />
           </p>

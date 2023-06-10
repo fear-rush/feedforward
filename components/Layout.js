@@ -2,12 +2,12 @@ import React, { Fragment } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { UserAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
 import { Menu, Transition } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 
+import { UserAuth } from "../context/AuthContext";
 import { logOut } from "../utils/firebaseauth";
 
 import mobilelogo from "../public/header/mobilelogo.png";
@@ -16,6 +16,7 @@ import desktoplogo from "../public/header/desktoplogo.png";
 function Layout({ children }) {
   const { user, userAuthLoading } = UserAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -29,7 +30,7 @@ function Layout({ children }) {
       <header className="w-full">
         <nav className="mt-1 flex h-20 w-full items-center justify-between px-6 shadow-md sm:px-12 lg:h-16 lg:px-16">
           <div className="hidden cursor-pointer md:block">
-            <Link href="/">
+            <Link href={user ? "/dashboard" : "/"}>
               <Image
                 src={desktoplogo}
                 width={35}
@@ -93,11 +94,12 @@ function Layout({ children }) {
                         <p
                           className="block px-3 py-2 text-sm font-medium text-gray-700 cursor-pointer"
                           onClick={() => {
+                            queryClient.removeQueries();
                             logOut();
                             router.replace("/signin");
                           }}
                         >
-                          Sign Out
+                          Keluar
                         </p>
                       </div>
                     </Menu.Item>
@@ -129,7 +131,7 @@ function Layout({ children }) {
                           onClick={() => router.replace("/signin")}
                           className="secondary-button w-24 px-4 py-3 mb-3"
                         >
-                          Sign in
+                          Masuk
                         </button>
                       </div>
                     </Menu.Item>
@@ -138,7 +140,7 @@ function Layout({ children }) {
                         onClick={() => router.replace("/signup")}
                         className="primary-button w-24 px-4 py-3"
                       >
-                        Sign Up
+                        Daftar
                       </button>
                     </Menu.Item>
                   </Menu.Items>
@@ -149,13 +151,13 @@ function Layout({ children }) {
                   onClick={() => router.replace("/signin")}
                   className="secondary-button w-32 px-4 py-3"
                 >
-                  Sign in
+                  Masuk
                 </button>
                 <button
                   onClick={() => router.replace("/signup")}
                   className="primary-button w-32 px-4 py-3"
                 >
-                  Sign up
+                  Daftar
                 </button>
               </div>
             </div>
@@ -163,9 +165,16 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      <main className="container mx-auto mb-36 mt-4 min-h-screen max-w-screen-lg lg:px-4 lg:mb-48">
-        {children}
-      </main>
+      {router.asPath.includes("/dashboard") ||
+      router.asPath.includes("/profile") ||
+      router.asPath.includes("/signin") ||
+      router.asPath.includes("/signup") ? (
+        <main className="container mx-auto mb-36 mt-4 min-h-screen max-w-screen-lg lg:px-4 lg:mb-48">
+          {children}
+        </main>
+      ) : (
+        <main>{children}</main>
+      )}
     </>
   );
 }

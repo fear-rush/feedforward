@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  getDocs,
-  collection,
-  where,
-  query,
-  startAfter,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   TrashIcon,
@@ -15,7 +7,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { getIdToken } from "firebase/auth";
 
-import { db } from "../../utils/firebaseconfig";
 
 import FabButton from "../Button/FabButton";
 import OnProcessTakenCard from "../FoodStatusCard/FoodTakenCard/OnProcessTakenCard";
@@ -37,42 +28,16 @@ const TakenFoodTab = ({ user }) => {
     queryKey: ["takenFoodList"],
     queryFn: async ({ pageParam = null }) => {
       try {
-        // let takenFoodDocumentsQuery;
-        // takenFoodDocumentsQuery = query(
-        //   collection(db, "food"),
-        //   where("takerId", "==", user.uid),
-        //   orderBy("dateAdded", "desc"),
-        //   limit(2)
-        // );
-
-        // if (pageParam) {
-        //   takenFoodDocumentsQuery = query(
-        //     takenFoodDocumentsQuery,
-        //     startAfter(pageParam)
-        //   );
-        // }
-
-        // const takenFoodDocuments = await getDocs(takenFoodDocumentsQuery);
-        // const foodData = takenFoodDocuments.docs.map((food) => {
-        //   return { id: food.id, ...food.data() };
-        // });
         const userToken = await getIdToken(user);
-        console.log(`inside next cursor ${pageParam}`);
-
+        console.log(userToken);
         const response = await fetch(
-          `http://127.0.0.1:5001/feed-forward-187f4/asia-southeast2/app/api/getTakenFood`,
+          `${process.env.DEV_URL}/getTakenFood?pageParam=${pageParam}`,
           {
-            method: "POST",
-            body: JSON.stringify({
-              pageParam: pageParam,
-            }),
             headers: {
               Authorization: "Bearer " + userToken,
-              "Content-type": "application/json; charset=UTF-8",
             },
           }
         );
-
         const res = await response.json();
 
         if (res.status !== 200) {
@@ -81,13 +46,9 @@ const TakenFoodTab = ({ user }) => {
         const foodData = res.data;
         const takenFoodDocuments = res.takenFoodDocuments;
 
-
         return {
           foodData,
-          // nextCursor:
-          //   takenFoodDocuments.docs.length <= 2
-          //     ? takenFoodDocuments.docs[takenFoodDocuments.docs.length - 1]
-          //     : null,
+
           nextCursor: takenFoodDocuments,
         };
       } catch (err) {
@@ -111,9 +72,6 @@ const TakenFoodTab = ({ user }) => {
     );
   }
 
-
-
-
   return (
     <>
       {isLoading ? (
@@ -124,7 +82,7 @@ const TakenFoodTab = ({ user }) => {
         </div>
       ) : (
         <>
-        {/* To Check if first page contain food data or not
+          {/* To Check if first page contain food data or not
             if empty then the user is not take any food yet
         */}
           {takenFoodData?.pages[0].foodData?.length > 0 ? (
@@ -251,3 +209,40 @@ export default TakenFoodTab;
         )
       )} */
 }
+
+// let takenFoodDocumentsQuery;
+// takenFoodDocumentsQuery = query(
+//   collection(db, "food"),
+//   where("takerId", "==", user.uid),
+//   orderBy("dateAdded", "desc"),
+//   limit(2)
+// );
+
+// if (pageParam) {
+//   takenFoodDocumentsQuery = query(
+//     takenFoodDocumentsQuery,
+//     startAfter(pageParam)
+//   );
+// }
+
+// const takenFoodDocuments = await getDocs(takenFoodDocumentsQuery);
+// const foodData = takenFoodDocuments.docs.map((food) => {
+//   return { id: food.id, ...food.data() };
+// });
+
+// nextCursor:
+//   takenFoodDocuments.docs.length <= 2
+//     ? takenFoodDocuments.docs[takenFoodDocuments.docs.length - 1]
+//     : null,
+
+// import {
+//   getDocs,
+//   collection,
+//   where,
+//   query,
+//   startAfter,
+//   orderBy,
+//   limit,
+// } from "firebase/firestore";
+
+// import { db } from "../../utils/firebaseconfig";

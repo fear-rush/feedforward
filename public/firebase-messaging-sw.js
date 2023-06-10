@@ -21,27 +21,22 @@
 //   "https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"
 // );
 
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyDpZFuPwJzUHA8_gEwfdBOp2lghrcjhO8A",
-//   authDomain: "web-push-notification-ex-b6d93.firebaseapp.com",
-//   projectId: "web-push-notification-ex-b6d93",
-//   storageBucket: "web-push-notification-ex-b6d93.appspot.com",
-//   messagingSenderId: "414177235606",
-//   appId: "1:414177235606:web:a29f3fb8e6ee3b621e28b7",
-// };
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"
+);
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAJLWeEwHt6MpYLWhWM_V-xxHFhVacq5Rs",
-  authDomain: "feedforward-45118.firebaseapp.com",
-  projectId: "feedforward-45118",
-  storageBucket: "feedforward-45118.appspot.com",
-  messagingSenderId: "555789981939",
-  appId: "1:555789981939:web:dca0e05db4402bf4ae7f86",
-  measurementId: "G-X6Z2EJZQXW"
-}
+  apiKey: "AIzaSyAg6jNWOzBWEm8msNSwPQN-ePUF_v0rki4",
+  authDomain: "feed-forward-187f4.firebaseapp.com",
+  projectId: "feed-forward-187f4",
+  storageBucket: "feed-forward-187f4.appspot.com",
+  messagingSenderId: "185567387995",
+  appId: "1:185567387995:web:b64116d5779e60a769ba7e",
+  measurementId: "G-RLZMCWDH8C",
+};
 
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
@@ -55,7 +50,17 @@ messaging.onBackgroundMessage((payload) => {
   const notificationOptions = {
     body: payload.notification.body,
     icon: payload.notification.image,
+    data: {
+      url: "localhost:3000/profile",
+    },
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+  self.addEventListener("notificationclick", function (event) {
+    let urlToRedirect = event.notification.data.urll;
+    event.notification.close();
+    event.waitUntil(self.clientInformation.openWindow(urlToRedirect));
+  });
 });
+
+

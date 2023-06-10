@@ -9,6 +9,7 @@ import {
   addDoc,
   Timestamp,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useForm } from "react-hook-form";
@@ -18,6 +19,7 @@ import { UserAuth } from "../../../context/AuthContext";
 import { db, storage } from "../../../utils/firebaseconfig";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { useMutation } from "@tanstack/react-query";
 
 const FormModal = ({
   isShareFoodModalOpen,
@@ -64,6 +66,25 @@ const FormModal = ({
     },
   });
 
+  const { mutate, isLoading, isError } = useMutation({
+    mutationFn: (formData) => {
+      return fetch(`${process.env.DEV_URL}/shareFood`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Acecess-Control-Allow-Origin": "*",
+        },
+        body: formData,
+      });
+    },
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
   const filterPassedTime = (time) => {
     const currentDate = new Date();
     const selectedDate = new Date(time);
@@ -72,76 +93,101 @@ const FormModal = ({
   };
 
   const submitFoodHandler = async (data) => {
-    const geofire = require("geofire-common");
-    const foodCollectionRef = collection(db, "food");
-    const latitude = Number(position.lat);
-    const longitude = Number(position.lng);
-    const hash = geofire.geohashForLocation([latitude, longitude]);
+    const formData = new FormData();
+    // const geofire = require("geofire-common");
+    // const foodCollectionRef = collection(db, "food");
+    // const latitude = Number(position.lat);
+    // const longitude = Number(position.lng);
+    // const hash = geofire.geohashForLocation([latitude, longitude]);
     const uploadImages = Object.values(data.foodImages);
+    formData.append("foodName", data.foodName);
+    formData.append("foodDescription", data.foodDescription);
+    formData.append("images", uploadImages[0]);
+    formData.append("dateAdded", {
+      seconds: Timestamp.now().seconds,
+      nanoseconds: Timestamp.now().nanoseconds,
+    });
+    formData.append("takenBeforeDate", data.takenBeforeDate.toISOString());
+    formData.append("foodType", data.foodType);
+    formData.append("foodWeight", data.foodWeight);
+    formData.append("giver", user.displayName);
+    formData.append("giverId", user.uid);
+    formData.append("pickupAddress", data.pickupAddress);
+    formData.append("addressDescription", data.addressDescription);
+    formData.append("latitude", position.lat);
+    formData.append("longitude", position.lng);
+    mutate(formData);
 
-    setIsShareFoodModalOpen(false);
-    setFoodShareLoading(true);
-    setIsFoodShareSuccess(false);
-
-    addDoc(foodCollectionRef, {
-      foodName: data.foodName,
-      foodDescription: data.foodDescription,
-      dateAdded: Timestamp.fromDate(new Date()),
-      takenBeforeDate: data.takenBeforeDate,
-      foodStatus: "available",
-      foodType: data.foodType,
-      foodWeight: data.foodWeight,
-      giver: user.displayName,
-      giverId: user.uid,
-      pickupAddress: data.pickupAddress,
-      addressDescription: data.addressDescription
-        ? data.addressDescription
-        : " ",
-      geohash: hash,
-      latitude: latitude,
-      longitude: longitude,
-    })
-      .then((foodSnapshot) => {
-        if (foodSnapshot.id) {
-          const imageRef = ref(
-            storage,
-            `images/${foodSnapshot.id}/${uploadImages[0].name}`
-          );
-          uploadBytes(imageRef, uploadImages[0]).then((snapshot) => {
-            getDownloadURL(imageRef)
-              .then(async (imageDownloadURL) => {
-                await updateDoc(doc(db, "food", foodSnapshot.id), {
-                  images: imageDownloadURL,
-                });
-
-                setIsShareFoodModalOpen(false);
-                setFoodShareLoading(false);
-                setIsFoodShareSuccess(true);
-              })
-              .catch((err) => {
-                toast.error(`Error occurred: ${err}`);
-                setIsShareFoodModalOpen(false);
-                setFoodShareLoading(false);
-                setIsFoodShareSuccess(false);
-                console.log(err);
-              });
-          });
-        } else {
-          toast.error(
-            "Error on adding data to the system. Please retry/reload the page"
-          );
-          setFoodShareLoading(false);
-          setIsFoodShareSuccess(false);
-        }
-        console.log(`ini foodSnapshot ${JSON.stringify(foodSnapshot.id)}`);
-      })
-      .catch((err) => {
-        toast.error(`Error occurred: ${err}`);
-        setIsShareFoodModalOpen(false);
-        setFoodShareLoading(false);
-        setIsFoodShareSuccess(false);
-      });
+    // setIsShareFoodModalOpen(false);
+    // setFoodShareLoading(true);
+    // setIsFoodShareSuccess(false);
+    // addDoc(foodCollectionRef, {
+    //   // change lat and lng to geopoint
+    //   foodName: data.foodName,
+    //   foodDescription: data.foodDescription,
+    //   dateAdded: Timestamp.fromDate(new Date()),
+    //   takenBeforeDate: data.takenBeforeDate,
+    //   foodStatus: "available",
+    //   foodType: data.foodType,
+    //   foodWeight: data.foodWeight,
+    //   giver: user.displayName,
+    //   giverId: user.uid,
+    //   pickupAddress: data.pickupAddress,
+    //   addressDescription: data.addressDescription
+    //     ? data.addressDescription
+    //     : " ",
+    //   geohash: hash,
+    //   latitude: latitude,
+    //   longitude: longitude,
+    // })
+    //   .then((foodSnapshot) => {
+    //     if (foodSnapshot.id) {
+    //       const imageRef = ref(
+    //         storage,
+    //         `images/${foodSnapshot.id}/${uploadImages[0].name}`
+    //       );
+    //       uploadBytes(imageRef, uploadImages[0]).then((snapshot) => {
+    //         getDownloadURL(imageRef)
+    //           .then(async (imageDownloadURL) => {
+    //             await updateDoc(doc(db, "food", foodSnapshot.id), {
+    //               images: imageDownloadURL,
+    //             });
+    //             // change to transcation
+    //             const userPoint = await getDoc(doc(db, "user", user.uid));
+    //             const currentUserPoint = userPoint.data().point;
+    //             await updateDoc(doc(db, "user", user.uid), {
+    //               point: Number(currentUserPoint + 10),
+    //             });
+    //             setIsShareFoodModalOpen(false);
+    //             setFoodShareLoading(false);
+    //             setIsFoodShareSuccess(true);
+    //           })
+    //           .catch((err) => {
+    //             toast.error(`Error occurred: ${err}`);
+    //             setIsShareFoodModalOpen(false);
+    //             setFoodShareLoading(false);
+    //             setIsFoodShareSuccess(false);
+    //             console.log(err);
+    //           });
+    //       });
+    //     } else {
+    //       toast.error(
+    //         "Error on adding data to the system. Please retry/reload the page"
+    //       );
+    //       setFoodShareLoading(false);
+    //       setIsFoodShareSuccess(false);
+    //     }
+    //     console.log(`ini foodSnapshot ${JSON.stringify(foodSnapshot.id)}`);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(`Error occurred: ${err}`);
+    //     setIsShareFoodModalOpen(false);
+    //     setFoodShareLoading(false);
+    //     setIsFoodShareSuccess(false);
+    //   });
   };
+
+  // console.log(`ini date ${startDate.toISOString()}`);
 
   return (
     <>
@@ -229,6 +275,7 @@ const FormModal = ({
                           </div>
                         )}
                       </div>
+
                       <div className="mb-4">
                         <label htmlFor="foodDescription" className="block">
                           Deskripsi Makanan
@@ -248,6 +295,7 @@ const FormModal = ({
                           </div>
                         )}
                       </div>
+
                       <div className="mb-4">
                         <label htmlFor="foodType" className="block">
                           Tipe Makanan (opsional)
@@ -277,6 +325,7 @@ const FormModal = ({
                           </option>
                         </select>
                       </div>
+
                       <div className="mb-4">
                         <label htmlFor="foodName" className="block">
                           Berat Makanan (opsional)
@@ -325,6 +374,7 @@ const FormModal = ({
                           </div>
                         )}
                       </div>
+
                       {watch("foodImages").length > 0 ? (
                         <div className="min-w-full flex flex-col justify-center items-center mb-4">
                           <div className="relative w-[300px] h-[300px] flex justify-center items-center mt-4">
@@ -399,6 +449,7 @@ const FormModal = ({
                           </div>
                         )}
                       </div>
+
                       <div className="mb-4">
                         <label htmlFor="addressDescription" className="block">
                           Detil Lokasi (opsional)

@@ -37,7 +37,7 @@ const SignInPage = () => {
       const userDocRef = doc(db, "user", loginData.user.uid);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
-        router.push("/");
+        router.push("/dashboard");
         setLoading(false);
       }
     } catch (err) {
@@ -94,7 +94,7 @@ const SignInPage = () => {
         <div className="mx-auto lg:py-12">
           <div className="text-center">
             <h1 className="mb-6 text-4xl font-extrabold lg:pl-9 lg:text-left">
-              Sign In
+              Halaman Masuk
             </h1>
           </div>
           <form
@@ -152,13 +152,13 @@ const SignInPage = () => {
               />
             ) : (
               <button className="secondary-button block px-5 py-2.5 mx-auto mb-4">
-                Sign In
+                Masuk
               </button>
             )}
             <div className="text-center">
-              <p>Don`&apos`t have an account yet? </p>
+              <p>Belum punya akun?</p>
               <Link href="/signup">
-                <p className="font-medium w-fit mx-auto">Sign up</p>
+                <p className="font-medium w-fit mx-auto">Daftar</p>
               </Link>
             </div>
           </form>

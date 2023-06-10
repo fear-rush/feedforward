@@ -49,7 +49,8 @@ const PickFoodConfirmationModal = ({
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
                       Makanan berhasil dibagikan. Terima kasih atas keinginan
-                      anda untuk membagikan makanan.
+                      anda untuk membagikan makanan. Silakan menuju profil untuk
+                      melihat makanan yang telah dibagikan
                     </p>
                   </div>
 

@@ -12,7 +12,6 @@ import { BeatLoader } from "react-spinners";
 
 import dynamic from "next/dynamic";
 const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
-// import Messages from "../../Chat/Messages";
 
 const OnProcessTakenCard = ({
   images,

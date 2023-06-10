@@ -6,6 +6,8 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "./firebaseconfig";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 const storeCustomerId = async (userUid, username, email) => {
   await setDoc(doc(db, "user", userUid), {
@@ -14,6 +16,7 @@ const storeCustomerId = async (userUid, username, email) => {
     email: email,
   });
 };
+
 
 export const signUp = async (username, email, password) => {
   try {

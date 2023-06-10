@@ -1,17 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 
 const getUserLocation = async () => {
-  const location = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        resolve(position);
+        const { latitude, longitude } = position.coords;
+        resolve({ latitude, longitude });
+        // resolve(position);
       },
       (error) => {
         reject(error);
+      }, {
+        enableHighAccuracy: true,
+        timeout: 30000
       }
     );
   });
-  return location;
 };
 
 export const useLocation = () => {

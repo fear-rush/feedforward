@@ -8,7 +8,6 @@ import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 
 import dynamic from "next/dynamic";
 const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
-// import Messages from "../../Chat/Messages";
 
 const OnProcessGivenCard = ({
   images,
