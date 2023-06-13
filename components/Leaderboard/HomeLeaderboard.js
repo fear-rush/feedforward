@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 
 import { getIdToken } from "firebase/auth";
 import { useQuery } from "@tanstack/react-query";
+import LeaderboardSkeleton from "./LeaderboardSkeleton";
+import axios from "axios";
 
 const LeaderboardModal = dynamic(
   () => import("../Modal/LeaderboardModal/LeaderboardModal"),
@@ -13,16 +15,19 @@ const LeaderboardModal = dynamic(
 const HomeLeaderboard = () => {
   const { user } = UserAuth();
   const [isleaderboardModalOpen, setIsLeaderBoardModalOpen] = useState(false);
-  
+
   const getUserStat = async () => {
     try {
       const userToken = await getIdToken(user);
-      const res = await fetch(`${process.env.DEV_URL}/getUserStat`, {
+      const res = await axios.get(`${process.env.PROD_URL}/getUserStat`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      const userStat = await res.json();
+      const userStat = res.data;
+      if (userStat.status !== 200) {
+        throw new Error(userStat.status);
+      }
       return userStat.data;
     } catch (err) {
       throw new Error(err);
@@ -32,6 +37,7 @@ const HomeLeaderboard = () => {
     isError,
     data: userStat,
     isLoading,
+    error,
   } = useQuery({
     queryKey: ["userStat"],
     queryFn: getUserStat,
@@ -39,8 +45,8 @@ const HomeLeaderboard = () => {
 
   if (isError) {
     return (
-      <div className="text-center">
-        <h1>Terjadi kesalahan saat mengambil data</h1>
+      <div className="text-center my-4">
+        <h1>Terjadi kesalahan saat mengambil data pengguna</h1>
       </div>
     );
   }
@@ -48,7 +54,7 @@ const HomeLeaderboard = () => {
   return (
     <>
       {isLoading ? (
-        <h1>Loading ...</h1>
+        <LeaderboardSkeleton />
       ) : (
         <>
           <div className="grid h-[100px] bg-gray-100 grid-cols-3 md:grid-cols-4 content-center justify-items-center border-2 rounded-lg mt-4">

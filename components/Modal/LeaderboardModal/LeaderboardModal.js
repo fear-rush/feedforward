@@ -2,6 +2,7 @@ import React from "react";
 import { Fragment } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const LeaderboardModal = ({
   isLeaderBoardModalOpen,
@@ -9,8 +10,8 @@ const LeaderboardModal = ({
 }) => {
   const getLeaderboard = async () => {
     try {
-      const res = await fetch(`${process.env.DEV_URL}/getLeaderboard`);
-      const leaderboard = await res.json();
+      const res = await axios.get(`${process.env.PROD_URL}/getLeaderboard`);
+      const leaderboard = res.data;
       return leaderboard.data;
     } catch (err) {
       throw new Error(err);
@@ -71,8 +72,7 @@ const LeaderboardModal = ({
                     Peringkat Teratas Pembagi Makanan
                   </Dialog.Title>
                   <p className="mt-2 text-sm text-gray-500">
-                    Mulai berpartisipasi untuk berbagi makanan dan kumpulkan
-                    poin!
+                    Mulai berpartisipasi untuk berbagi makanan, mulai peduli terhadap lingkungan dan kumpulkan poin!
                   </p>
                   {isLoading ? (
                     <h1 className="text-center">Loading ...</h1>
@@ -80,19 +80,29 @@ const LeaderboardModal = ({
                     leaderboardData.map((data, index) => (
                       <React.Fragment key={index}>
                         <div className="mt-2 flex items-center justify-evenly rounded-lg border-gray-200  shadow-cardshadow h-[50px] bg-white">
-                          <p className="flex-none w-1/12 block text-yellow-500 font-bold text-xl ">
+                          <p
+                            className={`flex-none w-1/12 block ${
+                              index == 0
+                                ? "text-yellow-500"
+                                : index == 1
+                                ? "text-slate-500"
+                                : index == 2
+                                ? "text-amber-500"
+                                : "text-gray-600"
+                            } font-bold text-xl`}
+                          >
                             {index + 1}
                           </p>
                           <p className="flex-none w-1/2  font-medium text-gray-600">
-                            {data?.name}
+                            {`${data?.name.slice(0, 4)}***`}
                           </p>
-                          <p className="font-medium text-gray-600">{data?.point}</p>
+                          <p className="font-medium w-10 text-center text-gray-600">
+                            {data?.point}
+                          </p>
                         </div>
                       </React.Fragment>
                     ))
                   )}
-
-                
 
                   <div className="mt-4">
                     <button

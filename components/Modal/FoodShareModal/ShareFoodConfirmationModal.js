@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { useRouter } from "next/router";
 
-const PickFoodConfirmationModal = ({
+const ShareFoodConfirmationModal = ({
   isFoodShareSuccessModalOpen,
   setIsFoodShareSuccessModalOpen,
 }) => {
@@ -76,4 +76,4 @@ const PickFoodConfirmationModal = ({
   );
 };
 
-export default PickFoodConfirmationModal;
+export default ShareFoodConfirmationModal;

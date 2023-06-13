@@ -13,8 +13,6 @@ const AvailableGivenCard = ({
   foodId,
 }) => {
 
-  console.log(takenBeforeDate.seconds);
-
   return (
     <>
       {/* SM COMPONENT CARD*/}

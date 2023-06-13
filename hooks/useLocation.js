@@ -6,7 +6,6 @@ const getUserLocation = async () => {
       (position) => {
         const { latitude, longitude } = position.coords;
         resolve({ latitude, longitude });
-        // resolve(position);
       },
       (error) => {
         reject(error);

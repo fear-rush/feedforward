@@ -1,17 +1,22 @@
-import { useState, Fragment } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Dialog, Transition } from "@headlessui/react";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+import { ToastContainer, toast } from "react-toastify";
+import dynamic from "next/dynamic";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 import { UserAuth } from "../../../context/AuthContext";
-import { db } from "../../../utils/firebaseconfig";
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { BeatLoader } from "react-spinners";
 
-import dynamic from "next/dynamic";
 const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
+const FoodPickupConfirmation = dynamic(import("../../Modal/OnProcessTakenModal/FoodPickupConfirmation"))
+const FoodCancelConfirmation = dynamic(import("../../Modal/OnProcessTakenModal/FoodCancelConfirmation"))
+
+import "react-toastify/dist/ReactToastify.css";
+
 
 const OnProcessTakenCard = ({
   images,
@@ -23,13 +28,13 @@ const OnProcessTakenCard = ({
   giverId,
   foodId,
   addressDescription,
+  takerName,
 }) => {
-  const [pickupConfirmationLoading, setPickupConfirmationLoading] =
-    useState(false);
   const [
     isFoodPickupConfirmationModalOpen,
     setIsFoodPickupConfirmationModalOpen,
   ] = useState(false);
+  const [isFoodCancelModalOpen, setIsFoodCancelModalOpen] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const router = useRouter();
   const { user: currentUser } = UserAuth();
@@ -38,27 +43,54 @@ const OnProcessTakenCard = ({
       ? currentUser.uid + giverId
       : giverId + currentUser.uid;
 
-  const foodPickupConfirmationHandler = async () => {
-    setPickupConfirmationLoading(true);
-
-    try {
-      const foodDocumentRef = doc(db, "food", foodId);
-      await updateDoc(foodDocumentRef, {
-        foodStatus: "taken",
-        dateTaken: Timestamp.now(),
+  const {
+    mutate: foodPickupMutate,
+    isLoading: foodPickupLoading,
+    isError: foodPickupError,
+    error,
+  } = useMutation({
+    mutationFn: () => {
+      setIsFoodPickupConfirmationModalOpen(false);
+      return axios.post(`${process.env.PROD_URL}/sendTakenNotification`, {
+        foodId: foodId,
+        foodName: foodName,
+        giverId: giverId,
+        takerName: takerName,
       });
-      setPickupConfirmationLoading(false);
+    },
+    onSuccess: () => {
       router.reload();
-    } catch (err) {
-      // add error handler toast
-      setPickupConfirmationLoading(false);
-      console.log(err);
-    }
-  };
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const contactGiverHandler = () => {
     setIsChatModalOpen(true);
   };
+
+  const {
+    mutate: foodCancelMutate,
+    isLoading: foodCancelLoading,
+    isError: foodCancelError,
+  } = useMutation({
+    mutationFn: () => {
+      setIsFoodCancelModalOpen(false);
+      return axios.post(`${process.env.PROD_URL}/sendCancelNotification`, {
+        takerName: takerName,
+        foodName: foodName,
+        foodId: foodId,
+        giverId: giverId,
+      });
+    },
+    onSuccess: () => {
+      router.reload();
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const override = {
     borderColor: "blue",
@@ -68,15 +100,22 @@ const OnProcessTakenCard = ({
     position: "fixed",
     left: "50%",
     top: "50%",
+    zIndex: "99"
   };
 
-  if (pickupConfirmationLoading) {
+  useEffect(() => {
+    if (foodPickupError || foodCancelError) {
+      toast.error(error.message);
+    }
+  }, [foodPickupError, foodCancelError]);
+
+  if (foodPickupLoading || foodCancelLoading) {
     return (
       <>
         <div className="fixed inset-0 bg-black bg-opacity-25"></div>
         <BeatLoader
           color="#000"
-          loading={pickupConfirmationLoading}
+          loading={foodPickupLoading || foodCancelLoading}
           cssOverride={override}
           size={15}
           aria-label="Loading Spinner"
@@ -88,6 +127,7 @@ const OnProcessTakenCard = ({
 
   return (
     <>
+      <ToastContainer />
       {/* SM COMPONENT CARD*/}
       <div className="lg:hidden rounded-lg shadow-cardshadow min-w-full mt-4">
         <div className="min-w-full cursor-pointer rounded-lg bg-white border-[1px] border-gray-200">
@@ -163,6 +203,13 @@ const OnProcessTakenCard = ({
               className="block w-full max-w-xs mx-auto px-6 py-2 bg-blue-100 rounded-lg text-gray-900 cursor-pointer my-3"
             >
               Konfirmasi Pengambilan
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFoodCancelModalOpen(true)}
+              className="block w-full max-w-xs mx-auto px-6 py-2 bg-red-100 rounded-lg text-gray-900 cursor-pointer my-3"
+            >
+              Batalkan Pengambilan
             </button>
           </div>
         </div>
@@ -246,6 +293,13 @@ const OnProcessTakenCard = ({
               >
                 Konfirmasi Pengambilan
               </button>
+              <button
+                type="button"
+                onClick={() => setIsFoodCancelModalOpen(true)}
+                className="w-full px-6 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-gray-900 cursor-pointer my-3"
+              >
+                Batalkan Pengambilan
+              </button>
             </div>
           </div>
         </div>
@@ -253,73 +307,22 @@ const OnProcessTakenCard = ({
 
       {/* Confirmation Modal */}
 
-      <Transition appear show={isFoodPickupConfirmationModalOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => setIsFoodPickupConfirmationModalOpen(false)}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+      <FoodPickupConfirmation
+        isFoodPickupConfirmationModalOpen={isFoodPickupConfirmationModalOpen}
+        setIsFoodPickupConfirmationModalOpen={
+          setIsFoodPickupConfirmationModalOpen
+        }
+        foodPickupMutate={foodPickupMutate}
+      />
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Konfirmasi Pengambilan Makanan
-                  </Dialog.Title>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Apakah anda sudah selesai mengambil makanan?
-                    </p>
-                  </div>
+      {/* Cancel Modal */}
+      <FoodCancelConfirmation
+        isFoodCancelModalOpen={isFoodCancelModalOpen}
+        setIsFoodCancelModalOpen={setIsFoodCancelModalOpen}
+        foodCancelMutate={foodCancelMutate}
+      />
 
-                  <div className="flex justify-end items-center mt-4 gap-4">
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                      onClick={() => {
-                        setIsFoodPickupConfirmationModalOpen(false);
-                      }}
-                    >
-                      Belum
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={foodPickupConfirmationHandler}
-                    >
-                      Sudah
-                    </button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
-
+       {/* Message Modal */}
       <Messages
         isChatModalOpen={isChatModalOpen}
         setIsChatModalOpen={setIsChatModalOpen}

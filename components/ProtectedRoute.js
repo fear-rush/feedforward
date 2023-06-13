@@ -13,14 +13,13 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user?.uid, userAuthLoading]);
 
-  // return <>{user?.uid && !userAuthLoading ? children : <h1>PLease Login</h1>}</>;
 
   return (
     <>
       {!user && userAuthLoading ? null : user?.uid && !userAuthLoading ? (
         children
       ) : (
-        <h1>Please Login</h1>
+        null
       )}
     </>
   );

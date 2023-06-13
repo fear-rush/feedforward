@@ -1,7 +1,6 @@
 import { useState, Fragment } from "react";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import { Dialog, Transition } from "@headlessui/react";
-import { MapPinIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useLocation } from "../hooks/useLocation";
@@ -38,7 +37,6 @@ function LocationSelector({
     geocoder.geocode({ location: position }, (results, status) => {
       if (status === "OK") {
         setValue("pickupAddress", results[0].formatted_address);
-        console.log(`address ini ${results[0].formatted_address}`);
         setIsMapModalOpen(false);
       } else {
         setAddress(null);
@@ -48,9 +46,6 @@ function LocationSelector({
 
   const handleFindCurrentLocation = () => {
     if (!islocationError) {
-      console.log(
-        `location: ${queryClient.getQueryData(["location"]).latitude}`
-      );
       setPosition({
         lat: queryClient.getQueryData(["location"]).latitude,
         lng: queryClient.getQueryData(["location"]).longitude,
@@ -60,9 +55,8 @@ function LocationSelector({
     }
   };
 
-  // add loader
   if (!isLoaded) {
-    return <div>Loading</div>;
+    return <div className="text-center mx-auto">Loading...</div>;
   }
 
   return (
@@ -72,7 +66,7 @@ function LocationSelector({
         onClick={() => setIsMapModalOpen(true)}
         type="button"
       >
-        <MapPinIcon className="h-6 w-6" />
+        <p>Pilih Lokasi</p>
       </button>
       <Transition show={isMapModalOpen} as={Fragment}>
         <Dialog
@@ -123,20 +117,20 @@ function LocationSelector({
                         className="p-2 w-[120px] rounded-md bg-blue-500 text-white text-xs font-semibold"
                         onClick={handlePickLocation}
                       >
-                        Pick Location
+                        Pilih Lokasi
                       </button>
                     )}
                     <button
                       className="p-2 w-[120px] rounded-md bg-blue-500 text-white text-xs font-semibold"
                       onClick={handleFindCurrentLocation}
                     >
-                      Find My Location
+                      Temukan Lokasi Saya
                     </button>
                     <button
                       className="p-2 w-[120px] rounded-md bg-red-500 text-white text-xs font-semibold"
                       onClick={() => setIsMapModalOpen(false)}
                     >
-                      Cancel
+                      Batal
                     </button>
                   </div>
                 </div>

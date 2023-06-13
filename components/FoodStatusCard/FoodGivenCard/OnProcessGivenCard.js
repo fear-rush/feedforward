@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import EllipsisText from "react-ellipsis-text/lib/components/EllipsisText";
+import dynamic from "next/dynamic";
 
 import { UserAuth } from "../../../context/AuthContext";
 
 import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 
-import dynamic from "next/dynamic";
 const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
 
 const OnProcessGivenCard = ({

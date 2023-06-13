@@ -1,12 +1,12 @@
 import React from "react";
-
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   TrashIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
-import { getIdToken } from "firebase/auth";
+import axios from "axios";
 
+import { getIdToken } from "firebase/auth";
 
 import FabButton from "../Button/FabButton";
 import OnProcessTakenCard from "../FoodStatusCard/FoodTakenCard/OnProcessTakenCard";
@@ -29,16 +29,16 @@ const TakenFoodTab = ({ user }) => {
     queryFn: async ({ pageParam = null }) => {
       try {
         const userToken = await getIdToken(user);
-        console.log(userToken);
-        const response = await fetch(
-          `${process.env.DEV_URL}/getTakenFood?pageParam=${pageParam}`,
+        const response = await axios.get(
+          `${process.env.PROD_URL}/getTakenFood?pageParam=${pageParam}`,
           {
             headers: {
-              Authorization: "Bearer " + userToken,
+              Authorization: `Bearer ${userToken}`,
             },
           }
         );
-        const res = await response.json();
+
+        const res = response.data;
 
         if (res.status !== 200) {
           throw new Error(res.status);
@@ -48,7 +48,6 @@ const TakenFoodTab = ({ user }) => {
 
         return {
           foodData,
-
           nextCursor: takenFoodDocuments,
         };
       } catch (err) {
@@ -129,120 +128,3 @@ const TakenFoodTab = ({ user }) => {
 
 export default TakenFoodTab;
 
-// const {
-//   isLoading,
-//   isError,
-//   data: takenFoodData,
-//   error,
-// } = useQuery({
-//   queryKey: ["takenFoodList"],
-//   queryFn: async () => {
-//     if (!queryClient.getQueryData(["takenFoodList"])) {
-//       console.log("here");
-//       let takenFoodList = [];
-//       const takenFoodQuery = query(
-//         collection(db, "food"),
-//         where("takerId", "==", user.uid)
-//       );
-//       const takenFoodSnapshot = await getDocs(takenFoodQuery);
-//       takenFoodSnapshot.forEach((takenFood) => {
-//         takenFoodList.push({
-//           foodId: takenFood.id,
-//           ...takenFood.data(),
-//         });
-//       });
-//       return takenFoodList;
-//     }
-//   },
-// });
-
-// useEffect(() => {
-//   let unmounted = false;
-//   let takenFoodList = [];
-//   const getTakenFoodCollection = async () => {
-//     try {
-//       const takenFoodQuery = query(
-//         collection(db, "food"),
-//         where("takerId", "==", user.uid)
-//       );
-//       const takenFoodSnapshot = await getDocs(takenFoodQuery);
-//       takenFoodSnapshot.forEach((takenFood) => {
-//         takenFoodList.push({
-//           foodId: takenFood.id,
-//           ...takenFood.data(),
-//         });
-//       });
-//       setTakenFoodData(takenFoodList);
-//     } catch (err) {
-//       // add error handler
-//       console.log(err);
-//     }
-//   };
-//   if (!unmounted) {
-//     getTakenFoodCollection();
-//   }
-//   return () => {
-//     unmounted = true;
-//   };
-// }, []);
-
-{
-  /* {takenFoodData.map((foodData) =>
-        foodData.foodStatus === "onprocess" ? (
-          <OnProcessTakenCard key={foodData.id} {...foodData} />
-        ) : (
-          <SuccessTakenCard key={foodData.id} {...foodData} />
-        )
-      )} */
-}
-
-{
-  /* {isLoading ? (
-        <h1>Loading...</h1>
-      ) : (
-        takenFoodData.map((foodData) =>
-          foodData.foodStatus === "onprocess" ? (
-            <OnProcessTakenCard key={foodData.id} {...foodData} />
-          ) : (
-            <SuccessTakenCard key={foodData.id} {...foodData} />
-          )
-        )
-      )} */
-}
-
-// let takenFoodDocumentsQuery;
-// takenFoodDocumentsQuery = query(
-//   collection(db, "food"),
-//   where("takerId", "==", user.uid),
-//   orderBy("dateAdded", "desc"),
-//   limit(2)
-// );
-
-// if (pageParam) {
-//   takenFoodDocumentsQuery = query(
-//     takenFoodDocumentsQuery,
-//     startAfter(pageParam)
-//   );
-// }
-
-// const takenFoodDocuments = await getDocs(takenFoodDocumentsQuery);
-// const foodData = takenFoodDocuments.docs.map((food) => {
-//   return { id: food.id, ...food.data() };
-// });
-
-// nextCursor:
-//   takenFoodDocuments.docs.length <= 2
-//     ? takenFoodDocuments.docs[takenFoodDocuments.docs.length - 1]
-//     : null,
-
-// import {
-//   getDocs,
-//   collection,
-//   where,
-//   query,
-//   startAfter,
-//   orderBy,
-//   limit,
-// } from "firebase/firestore";
-
-// import { db } from "../../utils/firebaseconfig";

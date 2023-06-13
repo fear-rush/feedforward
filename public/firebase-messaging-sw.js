@@ -49,18 +49,62 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: payload.notification.image,
     data: {
-      url: "localhost:3000/profile",
+      url: "/home",
     },
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
   self.addEventListener("notificationclick", function (event) {
-    let urlToRedirect = event.notification.data.urll;
+    let urlToRedirect = event.notification.data.url;
     event.notification.close();
     event.waitUntil(self.clientInformation.openWindow(urlToRedirect));
   });
 });
 
 
+// onMessage(messaging, (payload) => {
+//   const notificationTitle = payload.notification.title;
+//   const notificationOptions = {
+//     body: payload.notification.body,
+//     data: {
+//       url: "/home",
+//     },
+//   };
+//   navigator.serviceWorker.ready.then((registration) => {
+//     registration.showNotification(notificationTitle, {
+//       body: payload.notification.body,
+//     });
+//   });
+//   // new Notification(notificationTitle, notificationOptions);
+// });
+
+// messaging.onMessage((payload) => {
+//   const obj = JSON.parse(payload.data.notification);
+//   const notification = new Notification(obj.title, {
+//     body: obj.body,
+//   });
+
+//   notification.onclick = function (event) {
+//     event.preventDefault();
+//     window.open(payload.notification.webpush.fcm_options.link);
+//     notification.close();
+//   };
+// });
+
+// messaging.onMessage(function (payload) {
+//   try {
+//     console.log(`message received ${payload}`);
+//     const notificationTitle = payload.notification.title;
+//     const notificationOptions = {
+//       body: payload.notification.body,
+//       data: {
+//         url: "/home",
+//       },
+//     };
+//     self.registration.showNotification(notificationTitle, notificationOptions);
+//     new Notification(notificationTitle, notificationOptions);
+//   } catch (err) {
+//     console.log(`caught error ${err}`);
+//   }
+// });

@@ -18,9 +18,10 @@ import { getIdToken } from "firebase/auth";
 import ArticleSlider from "../../components/Slider/ArticleSlider";
 import HomeLeaderboard from "../../components/Leaderboard/HomeLeaderboard";
 import { useNotification } from "../../hooks/useNotification";
+import axios from "axios";
 
-const DashboardPage = () => {
-  const { user, userToken } = UserAuth();
+const HomePage = () => {
+  const { user } = UserAuth();
   const skeletonPlaceholder = Array(4).fill(0);
 
   const {
@@ -35,10 +36,8 @@ const DashboardPage = () => {
     error: notificationError,
   } = useNotification(user?.uid);
 
-  console.log(locationData)
-
   const {
-    data: allFoodData,
+    data: allFoodData = [],
     isLoading: isAllFoodLoading,
     error: isAllFoodError,
     error,
@@ -47,16 +46,15 @@ const DashboardPage = () => {
     queryFn: async () => {
       try {
         const userToken = await getIdToken(user);
-        console.log(userToken);
-        const response = await fetch(
-          `${process.env.DEV_URL}/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
+        const response = await axios.get(
+          `${process.env.PROD_URL}/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
           {
             headers: {
-              Authorization: "Bearer " + userToken,
+              Authorization: `Bearer ${userToken}`,
             },
           }
         );
-        const res = await response.json();
+        const res = response.data;
 
         if (res.status !== 200) {
           throw new Error(res.status);
@@ -66,7 +64,6 @@ const DashboardPage = () => {
           foodData,
         };
       } catch (err) {
-        console.log(err);
         throw new Error(err);
       }
     },
@@ -74,13 +71,6 @@ const DashboardPage = () => {
     enabled: !!locationData,
   });
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("../../firebase-messaging-sw.js");
-      });
-    }
-  }, []);
 
   if (isLocationError || isAllFoodError || isNotificationError) {
     return (
@@ -89,7 +79,8 @@ const DashboardPage = () => {
         <p className="text-center text-gray-700 text-lg">
           Galat terjadi. Dimohon untuk mengaktifkan perizinan lokasi dan
           notifikasi agar web bisa berjalan. Jika masih muncul pemberitahuan
-          galat silakan cek koneksi internet anda dan muat ulang halaman ini.{" "}
+          galat silakan cek koneksi internet anda dan muat ulang halaman ini
+          atau gunakan Google Chrome.{" "}
           {isLocationError
             ? "Error Location Disabled"
             : isNotificationError
@@ -104,7 +95,6 @@ const DashboardPage = () => {
   return (
     <>
       <ArticleSlider />
-      {/* Invalidate on logout */}
       <div className="mx-6 md:mx-10 ">
         <HomeLeaderboard />
       </div>
@@ -113,8 +103,8 @@ const DashboardPage = () => {
           Makanan Tersedia di Sekitar Anda
         </h1>
         {isAllFoodLoading || isLocationLoading ? (
-          skeletonPlaceholder.map((_, id) => <SkeletonFoodCard key={id} />)
-        ) : allFoodData.foodData.length > 0 ? (
+          skeletonPlaceholder?.map((_, id) => <SkeletonFoodCard key={id} />)
+        ) : allFoodData?.foodData?.length > 0 ? (
           allFoodData?.foodData?.map((food) => (
             <Link key={food.id} href={`/food/${food.id}`}>
               <FoodCard key={food.id} {...food} />
@@ -135,4 +125,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default HomePage;

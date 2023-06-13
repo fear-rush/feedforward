@@ -2,24 +2,17 @@ import { Fragment, useState } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import DatePicker from "react-datepicker";
 import { Controller } from "react-hook-form";
-import LocationSelector from "../../LocationSelector";
-import {
-  doc,
-  collection,
-  addDoc,
-  Timestamp,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 import { UserAuth } from "../../../context/AuthContext";
-import { db, storage } from "../../../utils/firebaseconfig";
 
+import LocationSelector from "../../LocationSelector";
+
+import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { useMutation } from "@tanstack/react-query";
 
 const FormModal = ({
   isShareFoodModalOpen,
@@ -66,22 +59,19 @@ const FormModal = ({
     },
   });
 
-  const { mutate, isLoading, isError } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: (formData) => {
-      return fetch(`${process.env.DEV_URL}/shareFood`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Acecess-Control-Allow-Origin": "*",
-        },
-        body: formData,
-      });
+      return axios.post(`${process.env.PROD_URL}/shareFood`, formData);
     },
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      setIsShareFoodModalOpen(false);
+      setFoodShareLoading(false);
+      setIsFoodShareSuccess(true);
     },
     onError: (error) => {
-      console.log(error);
+      toast.error(error.message);
+      setIsShareFoodModalOpen(false);
+      setFoodShareLoading(false);
     },
   });
 
@@ -93,20 +83,14 @@ const FormModal = ({
   };
 
   const submitFoodHandler = async (data) => {
+    setIsShareFoodModalOpen(false);
+    setFoodShareLoading(true);
+    setIsFoodShareSuccess(false);
     const formData = new FormData();
-    // const geofire = require("geofire-common");
-    // const foodCollectionRef = collection(db, "food");
-    // const latitude = Number(position.lat);
-    // const longitude = Number(position.lng);
-    // const hash = geofire.geohashForLocation([latitude, longitude]);
     const uploadImages = Object.values(data.foodImages);
     formData.append("foodName", data.foodName);
     formData.append("foodDescription", data.foodDescription);
     formData.append("images", uploadImages[0]);
-    formData.append("dateAdded", {
-      seconds: Timestamp.now().seconds,
-      nanoseconds: Timestamp.now().nanoseconds,
-    });
     formData.append("takenBeforeDate", data.takenBeforeDate.toISOString());
     formData.append("foodType", data.foodType);
     formData.append("foodWeight", data.foodWeight);
@@ -117,107 +101,11 @@ const FormModal = ({
     formData.append("latitude", position.lat);
     formData.append("longitude", position.lng);
     mutate(formData);
-
-    // setIsShareFoodModalOpen(false);
-    // setFoodShareLoading(true);
-    // setIsFoodShareSuccess(false);
-    // addDoc(foodCollectionRef, {
-    //   // change lat and lng to geopoint
-    //   foodName: data.foodName,
-    //   foodDescription: data.foodDescription,
-    //   dateAdded: Timestamp.fromDate(new Date()),
-    //   takenBeforeDate: data.takenBeforeDate,
-    //   foodStatus: "available",
-    //   foodType: data.foodType,
-    //   foodWeight: data.foodWeight,
-    //   giver: user.displayName,
-    //   giverId: user.uid,
-    //   pickupAddress: data.pickupAddress,
-    //   addressDescription: data.addressDescription
-    //     ? data.addressDescription
-    //     : " ",
-    //   geohash: hash,
-    //   latitude: latitude,
-    //   longitude: longitude,
-    // })
-    //   .then((foodSnapshot) => {
-    //     if (foodSnapshot.id) {
-    //       const imageRef = ref(
-    //         storage,
-    //         `images/${foodSnapshot.id}/${uploadImages[0].name}`
-    //       );
-    //       uploadBytes(imageRef, uploadImages[0]).then((snapshot) => {
-    //         getDownloadURL(imageRef)
-    //           .then(async (imageDownloadURL) => {
-    //             await updateDoc(doc(db, "food", foodSnapshot.id), {
-    //               images: imageDownloadURL,
-    //             });
-    //             // change to transcation
-    //             const userPoint = await getDoc(doc(db, "user", user.uid));
-    //             const currentUserPoint = userPoint.data().point;
-    //             await updateDoc(doc(db, "user", user.uid), {
-    //               point: Number(currentUserPoint + 10),
-    //             });
-    //             setIsShareFoodModalOpen(false);
-    //             setFoodShareLoading(false);
-    //             setIsFoodShareSuccess(true);
-    //           })
-    //           .catch((err) => {
-    //             toast.error(`Error occurred: ${err}`);
-    //             setIsShareFoodModalOpen(false);
-    //             setFoodShareLoading(false);
-    //             setIsFoodShareSuccess(false);
-    //             console.log(err);
-    //           });
-    //       });
-    //     } else {
-    //       toast.error(
-    //         "Error on adding data to the system. Please retry/reload the page"
-    //       );
-    //       setFoodShareLoading(false);
-    //       setIsFoodShareSuccess(false);
-    //     }
-    //     console.log(`ini foodSnapshot ${JSON.stringify(foodSnapshot.id)}`);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(`Error occurred: ${err}`);
-    //     setIsShareFoodModalOpen(false);
-    //     setFoodShareLoading(false);
-    //     setIsFoodShareSuccess(false);
-    //   });
   };
-
-  // console.log(`ini date ${startDate.toISOString()}`);
 
   return (
     <>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        className="hidden lg:block"
-      />
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        className="lg:hidden"
-      />
-
+      <ToastContainer />
       <Transition appear show={isShareFoodModalOpen} as={Fragment}>
         <Dialog
           as="div"
@@ -254,6 +142,14 @@ const FormModal = ({
                   >
                     Share your food!
                   </Dialog.Title>
+                  <div className="mt-2 bg-yellow-200 rounded-lg">
+                    <p className="p-4 text-gray-600">
+                      Sebelum membagikan makanan dimohon untuk memperhatikan
+                      kondisi makanan. Perhatikan kondisi makanan layak untuk
+                      dimakan dan dibagikan
+                    </p>
+                  </div>
+
                   <div className="mt-2">
                     <form noValidate onSubmit={handleSubmit(submitFoodHandler)}>
                       <div className="mb-4">
@@ -263,7 +159,7 @@ const FormModal = ({
                         <input
                           type="text"
                           {...register("foodName", {
-                            required: "Please enter a food name",
+                            required: "Masukkan nama makanan",
                           })}
                           id="foodName"
                           placeholder="contoh: mie instan"
@@ -283,7 +179,8 @@ const FormModal = ({
                         <textarea
                           type="foodDescription"
                           {...register("foodDescription", {
-                            required: "Please enter food description",
+                            required:
+                              "Masakan deskripsi tambahan untuk makanan",
                           })}
                           id="foodDescription"
                           placeholder="mie instan 4 bungkus"
@@ -310,20 +207,25 @@ const FormModal = ({
                             Kosongkan
                           </option>
                           <option value={1}>
-                            Makanan dengan minimal proses (buah, sayur, daging,
-                            jagung)
+                            Sangat mudah basi (dapat bertahan 1-2 hari)
                           </option>
                           <option value={2}>
-                            Bahan pangan olahan industri (garam, gula, minyak)
+                            Mudah basi (dapat bertahan lebih dari 2 hari)
                           </option>
                           <option value={3}>
-                            Makanan olahan (asinan, keju, daging asap)
-                          </option>
-                          <option value={4}>
-                            Makanan ultra proses (mie instan, minuman bersoda,
-                            sereal)
+                            Tidak mudah basi (dapat bertahan lebih dari 1 bulan)
                           </option>
                         </select>
+                        <a
+                          href="https://www.foodsafety.gov/keep-food-safe/foodkeeper-app"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          <p className="text-blue-500 underline mt-2">
+                            Pelajari lebih lanjut tentang rentang waktu simpan
+                            makanan
+                          </p>
+                        </a>
                       </div>
 
                       <div className="mb-4">
@@ -332,12 +234,19 @@ const FormModal = ({
                         </label>
                         <input
                           type="number"
-                          {...register("foodWeight")}
+                          {...register("foodWeight", {
+                            min: 0,
+                          })}
                           id="foodWeight"
                           placeholder="300"
                           className="w-1/5 border-2 p-2 rounded-lg mt-1"
                         ></input>
                         <span className="ml-2">Gram</span>
+                        {errors.foodWeight && (
+                          <div className="text-red-500">
+                            {errors.foodWeight.message}
+                          </div>
+                        )}
                       </div>
 
                       <div className="mb-4">

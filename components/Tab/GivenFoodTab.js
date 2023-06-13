@@ -1,5 +1,4 @@
 import React from "react";
-
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   TrashIcon,
@@ -7,6 +6,8 @@ import {
 } from "@heroicons/react/24/outline";
 import FabButton from "../Button/FabButton";
 import { getIdToken } from "firebase/auth";
+import axios from "axios";
+
 
 import AvailableGivenCard from "../FoodStatusCard/FoodGivenCard/AvailableGivenCard";
 import ExpiredGivenCard from "../FoodStatusCard/FoodGivenCard/ExpiredGivenCard";
@@ -31,16 +32,15 @@ const GivenFoodTab = ({ user }) => {
       try {
         const userToken = await getIdToken(user);
 
-        const response = await fetch(
-          `${process.env.DEV_URL}/getGivenFood?pageParam=${pageParam}`,
+        const response = await axios.get(
+          `${process.env.PROD_URL}/getGivenFood?pageParam=${pageParam}`,
           {
             headers: {
-              Authorization: "Bearer " + userToken,
+              Authorization: `Bearer ${userToken}`,
             },
           }
         );
-
-        const res = await response.json();
+        const res = response.data;
 
         if (res.status !== 200) {
           throw new Error(res.status);
@@ -50,7 +50,6 @@ const GivenFoodTab = ({ user }) => {
 
         return {
           foodData,
-
           nextCursor: givenFoodDocuments,
         };
       } catch (err) {
@@ -67,7 +66,7 @@ const GivenFoodTab = ({ user }) => {
       <div className="w-full h-screen px-6">
         <ExclamationTriangleIcon className="h-20 w-20 mt-16 text-yellow-300 mx-auto" />
         <p className="text-center text-gray-700 text-lg">
-          Terjadi kegagalan pada sistem
+          Terjadi kegagalan pada sistem {error.message}
         </p>
         <FabButton />
       </div>
@@ -106,7 +105,8 @@ const GivenFoodTab = ({ user }) => {
             <div className="text-center px-8 mt-12">
               <TrashIcon className="w-14 h-14 text-black mx-auto" />
               <p className="text-gray-700 mt-4 text-lg">
-                Tidak ada makanan yang diambil
+                Belum ada makanan yang diberi. Ingin mulai berbagi makanan?
+                tekan tombol bagikan makanan untuk mulai berbagi
               </p>
             </div>
           )}

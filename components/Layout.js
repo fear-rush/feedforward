@@ -29,25 +29,33 @@ function Layout({ children }) {
 
       <header className="w-full">
         <nav className="mt-1 flex h-20 w-full items-center justify-between px-6 shadow-md sm:px-12 lg:h-16 lg:px-16">
-          <div className="hidden cursor-pointer md:block">
-            <Link href={user ? "/dashboard" : "/"}>
+          <div className="hidden cursor-pointer md:flex md:items-center md:gap-x-2">
+            <Link href={user ? "/home" : "/"}>
               <Image
                 src={desktoplogo}
                 width={35}
                 height={35}
                 style={{ width: "auto", height: "auto" }}
                 priority={true}
+                alt="FeedForward Logo"
               />
             </Link>
+            <p className="font-bold text-lg">FeedForward</p>
           </div>
 
-          <div className="block cursor-pointer md:hidden">
+          <div className="flex items-center gap-x-2 cursor-pointer md:hidden">
             <Link href="/">
-              <Image src={mobilelogo} width={35} height={35} priority={true} />
+              <Image
+                src={mobilelogo}
+                width={35}
+                height={35}
+                priority={true}
+                alt="FeedForward Logo"
+              />
             </Link>
+            <p className="font-bold text-lg">FeedForward</p>
           </div>
 
-          {/* add loader */}
           {!user && userAuthLoading ? null : user && !userAuthLoading ? (
             <Menu as="div" className="inline-block text-left">
               <div className="items-center justify-center gap-4 lg:flex">
@@ -80,15 +88,22 @@ function Layout({ children }) {
                         {user.displayName}
                       </a>
                     </Menu.Item>
-                    <Menu.Item as="div" className="hover:bg-gray-100">
-                      <div>
-                        <Link href="/profile">
-                          <p className="block px-3 py-2 text-sm font-medium text-gray-700">
-                            Profile
+                    {router.asPath.includes("/home") ||
+                    router.asPath.includes("/profile") ? null : (
+                      <Menu.Item as="div" className="hover:bg-gray-100">
+                        <div>
+                          <p
+                            className="block px-3 py-2 text-sm font-medium text-gray-700 cursor-pointer"
+                            onClick={() => {
+                              queryClient.removeQueries();
+                              router.push("/home");
+                            }}
+                          >
+                            Home
                           </p>
-                        </Link>
-                      </div>
-                    </Menu.Item>
+                        </div>
+                      </Menu.Item>
+                    )}
                     <Menu.Item as="div" className="hover:bg-gray-100">
                       <div>
                         <p
@@ -107,7 +122,8 @@ function Layout({ children }) {
                 </Menu.Items>
               </Transition>
             </Menu>
-          ) : (
+          ) : router.asPath.includes("/signin") ||
+            router.asPath.includes("/signup") ? null : (
             <div>
               <Menu as="div" className="inline-block text-left lg:hidden">
                 <div>
@@ -165,7 +181,7 @@ function Layout({ children }) {
         </nav>
       </header>
 
-      {router.asPath.includes("/dashboard") ||
+      {router.asPath.includes("/home") ||
       router.asPath.includes("/profile") ||
       router.asPath.includes("/signin") ||
       router.asPath.includes("/signup") ? (

@@ -3,6 +3,7 @@ import FoodDetailView from "../../../components/FoodDetail/FoodDetailView";
 import dynamic from "next/dynamic";
 import { useFoodById } from "../../../hooks/useFoodById";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import FoodDetailSkeleton from "../../../components/FoodDetail/FoodDetailSkeleton";
 const FabButton = dynamic(
   () => import("../../../components/Button/FabButton"),
   { ssr: false }
@@ -21,7 +22,9 @@ const FoodDetail = () => {
         <button
           type="button"
           className="bg-blue-400 px-2 py-1 hover:bg-blue-500 text-white rounded-lg mt-2 cursor-pointer"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => {
+            router.replace("/home");
+          }}
         >
           Kembali ke Home
         </button>
@@ -32,8 +35,7 @@ const FoodDetail = () => {
 
   return (
     <>
-    {/* add Loader */}
-      {isLoading ? <div>loading</div> : <FoodDetailView {...foodData} />}
+      {isLoading ? <FoodDetailSkeleton /> : <FoodDetailView {...foodData} />}
       <FabButton />
     </>
   );

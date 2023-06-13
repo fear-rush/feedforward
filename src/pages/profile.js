@@ -10,8 +10,6 @@ const TakenFoodTab = dynamic(() => import("../../components/Tab/TakenFoodTab"), 
 const FabButton = dynamic(() => import("../../components/Button/FabButton"), {ssr: false})
 
 
-// import FabButton from "../../components/Button/FabButton";
-
 const ProfilePage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tabItems = ["Makanan Diambil", "Makanan Diberi"];

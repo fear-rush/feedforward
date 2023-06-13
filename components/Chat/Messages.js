@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, Transition } from "@headlessui/react";
 import { v4 as uuid } from "uuid";
@@ -49,7 +49,7 @@ const Messages = ({
           setIsInputDisabled(false);
         }
       } catch (err) {
-        // add error handler
+        setIsChatModalOpen(false);
         console.log(err);
       }
     };
@@ -128,32 +128,34 @@ const Messages = ({
                     {"\u2715"}
                   </Dialog.Title>
                 </div>
-                <div className=" bg-white rounded-lg h-[400px] p-2 overflow-scroll">
+                <div className=" bg-white rounded-lg h-[400px] p-2 overflow-y-scroll">
                   {messages.map((message) => (
                     <ChatBubble key={message.id} message={message} />
                   ))}
                 </div>
-                <div className="flex justify-between items-center mt-4 gap-4">
-                  <input
-                    type="text"
-                    {...register("message")}
-                    id="chat"
-                    disabled={isInputDisabled}
-                    placeholder={
-                      isInputDisabled ? "Loading ..." : "Ketikan pesan ..."
-                    }
-                    className={`w-full rounded-lg border-2 border-gray-200 p-2 ${
-                      isInputDisabled ? "bg-gray-300" : null
-                    }`}
-                  ></input>
-                  <button
-                    type="submit"
-                    className="inline-flex justify-center rounded-full bg-blue-100 px-3.5 py-2"
-                    onClick={handleSubmit(sendMessage)}
-                  >
-                    {"\u27A4"}
-                  </button>
-                </div>
+
+                <form noValidate onSubmit={handleSubmit(sendMessage)}>
+                  <div className="flex justify-between items-center mt-4 gap-4">
+                    <input
+                      type="text"
+                      {...register("message")}
+                      id="chat"
+                      disabled={isInputDisabled}
+                      placeholder={
+                        isInputDisabled ? "Loading ..." : "Ketikan pesan ..."
+                      }
+                      className={`w-full rounded-lg border-2 border-gray-200 p-2 ${
+                        isInputDisabled ? "bg-gray-300" : null
+                      }`}
+                    ></input>
+                    <button
+                      type="submit"
+                      className="inline-flex justify-center rounded-full bg-blue-100 px-3.5 py-2"
+                    >
+                      {"\u27A4"}
+                    </button>
+                  </div>
+                </form>
               </Dialog.Panel>
             </Transition.Child>
           </div>

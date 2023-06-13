@@ -11,6 +11,7 @@ import { signIn } from "../../utils/firebaseauth";
 import { db } from "utils/firebaseconfig";
 
 import splitframe from "../../public/signin/frame2.png";
+
 import "react-toastify/dist/ReactToastify.css";
 
 const override = {
@@ -22,7 +23,6 @@ const override = {
 
 const SignInPage = () => {
   const [loading, setLoading] = useState(false);
-  // const { signIn } = UserAuth();
   const router = useRouter();
   const {
     handleSubmit,
@@ -37,11 +37,10 @@ const SignInPage = () => {
       const userDocRef = doc(db, "user", loginData.user.uid);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
-        router.push("/dashboard");
+        router.replace("/home");
         setLoading(false);
       }
     } catch (err) {
-      // add react popup on error
       if (err.code === "auth/wrong-password") {
         toast.error("Invalid email/password");
       } else if (err.code === "auth/user-not-found") {
@@ -50,7 +49,6 @@ const SignInPage = () => {
         toast.error(`An error occured. Error: ${err.code}`);
       }
       setLoading(false);
-      // console.log(err.code);
     }
   };
 
