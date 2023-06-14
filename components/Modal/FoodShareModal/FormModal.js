@@ -181,10 +181,10 @@ const FormModal = ({
                           type="foodDescription"
                           {...register("foodDescription", {
                             required:
-                              "Masakan deskripsi tambahan untuk makanan",
+                              "Masukkan deskripsi tambahan untuk makanan",
                           })}
                           id="foodDescription"
-                          placeholder="mie instan 4 bungkus"
+                          placeholder="mie instan 4 bungkus. diharap membawa kantong plastik sendiri"
                           className="block h-[100px] min-w-full border-2 p-2 rounded-lg mt-1"
                         ></textarea>
                         {errors.foodDescription && (
@@ -258,7 +258,7 @@ const FormModal = ({
                           control={control}
                           name="takenBeforeDate"
                           rules={{
-                            required: "Please select a date",
+                            required: "Silakan pilih tanggal baik diambil sebelum",
                           }}
                           render={({ field: { onChange, value } }) => (
                             <DatePicker
@@ -339,7 +339,7 @@ const FormModal = ({
                           <input
                             type="text"
                             {...register("pickupAddress", {
-                              required: "Please enter a valid pickup address",
+                              required: "Silakan pilih lokasi pengambilan",
                             })}
                             id="pickupAddress"
                             value={watch("pickupAddress")}
@@ -369,7 +369,7 @@ const FormModal = ({
                           type="text"
                           {...register("addressDescription")}
                           id="addressDescription"
-                          placeholder="yellow house, brown fence"
+                          placeholder="rumah hijau, pagar putih"
                           className="min-w-full border-2 p-2 rounded-lg mt-1"
                         ></input>
                         {errors.addressDescription && (
