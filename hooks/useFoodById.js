@@ -3,7 +3,8 @@ import axios from "axios";
 
 const getFoodById = async (foodId) => {
   try {
-    const res = await axios.get(`${process.env.PROD_URL}/getFoodById/${foodId}`);
+    // const res = await axios.get(`${process.env.PROD_URL}/getFoodById/${foodId}`);
+    const res = await axios.get(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getFoodById/${foodId}`);
     const food = res.data;
     if (food.status !== 200) {
       throw new Error(food.status);

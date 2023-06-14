@@ -7,7 +7,11 @@ const getUserNotification = async (user) => {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       const deviceToken = await getFcmToken();
-      await axios.post(`${process.env.PROD_URL}/saveDeviceToken`, {
+      // await axios.post(`${process.env.PROD_URL}/saveDeviceToken`, {
+      //   userId: user,
+      //   token: deviceToken,
+      // })
+      await axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/saveDeviceToken`, {
         userId: user,
         token: deviceToken,
       })

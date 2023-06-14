@@ -61,7 +61,8 @@ const FormModal = ({
 
   const { mutate } = useMutation({
     mutationFn: (formData) => {
-      return axios.post(`${process.env.PROD_URL}/shareFood`, formData);
+      // return axios.post(`${process.env.PROD_URL}/shareFood`, formData);
+      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/shareFood`, formData);
     },
     onSuccess: () => {
       setIsShareFoodModalOpen(false);

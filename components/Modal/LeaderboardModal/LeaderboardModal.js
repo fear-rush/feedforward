@@ -10,7 +10,8 @@ const LeaderboardModal = ({
 }) => {
   const getLeaderboard = async () => {
     try {
-      const res = await axios.get(`${process.env.PROD_URL}/getLeaderboard`);
+      // const res = await axios.get(`${process.env.PROD_URL}/getLeaderboard`);
+      const res = await axios.get(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getLeaderboard`);
       const leaderboard = res.data;
       return leaderboard.data;
     } catch (err) {

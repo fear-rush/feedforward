@@ -53,7 +53,15 @@ const FoodDetailView = ({
     mutationFn: () => {
       setIsFoodConfirmationModalOpen(false);
       queryClient.removeQueries();
-      return axios.post(`${process.env.PROD_URL}/sendPickupNotification`, {
+      // return axios.post(`${process.env.PROD_URL}/sendPickupNotification`, {
+      //   foodName: foodName,
+      //   takerName: user.displayName,
+      //   foodId: foodId,
+      //   takerId: user.uid,
+      //   dateTaken: Timestamp.now(),
+      //   giverId: giverId,
+      // });
+      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendPickupNotification`, {
         foodName: foodName,
         takerName: user.displayName,
         foodId: foodId,

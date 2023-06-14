@@ -46,8 +46,16 @@ const HomePage = () => {
     queryFn: async () => {
       try {
         const userToken = await getIdToken(user);
+        // const response = await axios.get(
+        //   `${process.env.PROD_URL}/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${userToken}`,
+        //     },
+        //   }
+        // );
         const response = await axios.get(
-          `${process.env.PROD_URL}/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
+          `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
           {
             headers: {
               Authorization: `Bearer ${userToken}`,

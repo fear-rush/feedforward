@@ -51,7 +51,13 @@ const OnProcessTakenCard = ({
   } = useMutation({
     mutationFn: () => {
       setIsFoodPickupConfirmationModalOpen(false);
-      return axios.post(`${process.env.PROD_URL}/sendTakenNotification`, {
+      // return axios.post(`${process.env.PROD_URL}/sendTakenNotification`, {
+      //   foodId: foodId,
+      //   foodName: foodName,
+      //   giverId: giverId,
+      //   takerName: takerName,
+      // });
+      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendTakenNotification`, {
         foodId: foodId,
         foodName: foodName,
         giverId: giverId,
@@ -77,7 +83,13 @@ const OnProcessTakenCard = ({
   } = useMutation({
     mutationFn: () => {
       setIsFoodCancelModalOpen(false);
-      return axios.post(`${process.env.PROD_URL}/sendCancelNotification`, {
+      // return axios.post(`${process.env.PROD_URL}/sendCancelNotification`, {
+      //   takerName: takerName,
+      //   foodName: foodName,
+      //   foodId: foodId,
+      //   giverId: giverId,
+      // });
+      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendCancelNotification`, {
         takerName: takerName,
         foodName: foodName,
         foodId: foodId,

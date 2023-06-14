@@ -29,8 +29,16 @@ const TakenFoodTab = ({ user }) => {
     queryFn: async ({ pageParam = null }) => {
       try {
         const userToken = await getIdToken(user);
+        // const response = await axios.get(
+        //   `${process.env.PROD_URL}/getTakenFood?pageParam=${pageParam}`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${userToken}`,
+        //     },
+        //   }
+        // );
         const response = await axios.get(
-          `${process.env.PROD_URL}/getTakenFood?pageParam=${pageParam}`,
+          `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getTakenFood?pageParam=${pageParam}`,
           {
             headers: {
               Authorization: `Bearer ${userToken}`,

@@ -19,7 +19,12 @@ const HomeLeaderboard = () => {
   const getUserStat = async () => {
     try {
       const userToken = await getIdToken(user);
-      const res = await axios.get(`${process.env.PROD_URL}/getUserStat`, {
+      // const res = await axios.get(`${process.env.PROD_URL}/getUserStat`, {
+      //   headers: {
+      //     Authorization: `Bearer ${userToken}`,
+      //   },
+      // });
+      const res = await axios.get(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getUserStat`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
