@@ -5,7 +5,6 @@ const getFoodById = async (foodId) => {
   try {
     const res = await axios.get(`${process.env.PROD_URL}/getFoodById/${foodId}`);
     const food = res.data;
-    console.log(food.status)
     if (food.status !== 200) {
       throw new Error(food.status);
     }

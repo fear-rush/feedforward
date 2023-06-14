@@ -50,7 +50,6 @@ const Messages = ({
         }
       } catch (err) {
         setIsChatModalOpen(false);
-        console.log(err);
       }
     };
 

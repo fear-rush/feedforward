@@ -313,8 +313,9 @@ const FormModal = ({
                               <br />
                               <input
                                 type="file"
+                                capture="environment"
                                 {...register("foodImages", {
-                                  required: "Please upload one image",
+                                  required: "Silakan unggah satu gambar",
                                 })}
                                 id="foodImages"
                                 className="hidden"

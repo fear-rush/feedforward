@@ -7,7 +7,6 @@ const getUserNotification = async (user) => {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       const deviceToken = await getFcmToken();
-      console.log(deviceToken);
       await axios.post(`${process.env.PROD_URL}/saveDeviceToken`, {
         userId: user,
         token: deviceToken,

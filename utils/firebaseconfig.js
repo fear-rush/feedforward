@@ -18,7 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 let messaging;
-if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
+if (typeof window !== "undefined") {
   messaging = getMessaging(app);
 }
 
@@ -33,4 +33,4 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-export { app, db, messaging, auth, storage, onMessageListener };
+export { app, db, auth, storage, onMessageListener };

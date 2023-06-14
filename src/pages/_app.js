@@ -14,7 +14,6 @@ import { onMessageListener } from "../../utils/firebaseconfig";
 import "@/styles/globals.css";
 
 onMessageListener().then((payload) => {
-  console.log(`payload dari app ${payload}`);
   toast.info(
     <div>
       {payload.notification.title} <br /> {payload.notification.body}
