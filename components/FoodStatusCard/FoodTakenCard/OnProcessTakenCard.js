@@ -117,7 +117,7 @@ const OnProcessTakenCard = ({
 
   useEffect(() => {
     if (foodPickupError || foodCancelError) {
-      toast.error(error.message);
+      toast.error(JSON.stringify(error));
     }
   }, [foodPickupError, foodCancelError]);
 
