@@ -74,7 +74,7 @@ const GivenFoodTab = ({ user }) => {
       <div className="w-full h-screen px-6">
         <ExclamationTriangleIcon className="h-20 w-20 mt-16 text-yellow-300 mx-auto" />
         <p className="text-center text-gray-700 text-lg">
-          Terjadi kegagalan pada sistem {error.message}
+          Terjadi kegagalan pada sistem {error}
         </p>
         <FabButton />
       </div>

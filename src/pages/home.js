@@ -19,6 +19,7 @@ import ArticleSlider from "../../components/Slider/ArticleSlider";
 import HomeLeaderboard from "../../components/Leaderboard/HomeLeaderboard";
 import { useNotification } from "../../hooks/useNotification";
 import axios from "axios";
+import { Timestamp } from "firebase/firestore";
 
 const HomePage = () => {
   const { user } = UserAuth();
@@ -54,6 +55,10 @@ const HomePage = () => {
         //     },
         //   }
         // );
+        // console.log(locationData.latitude);
+        // console.log(locationData.longitude);
+        // console.log(userToken);
+        // console.log((Timestamp.now()))
         const response = await axios.get(
           `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/getFood?lat=${locationData.latitude}&lng=${locationData.longitude}`,
           {
@@ -79,8 +84,29 @@ const HomePage = () => {
     enabled: !!locationData,
   });
 
+  // comment isNotificationError
 
-  if (isLocationError || isAllFoodError || isNotificationError) {
+  // if (isLocationError || isAllFoodError || isNotificationError) {
+  //   return (
+  //     <div className="w-full h-screen px-6">
+  //       <ExclamationTriangleIcon className="h-20 w-20 mt-16 text-yellow-300 mx-auto" />
+  //       <p className="text-center text-gray-700 text-lg">
+  //         Galat terjadi. Dimohon untuk mengaktifkan perizinan lokasi dan
+  //         notifikasi agar web bisa berjalan. Jika masih muncul pemberitahuan
+  //         galat silakan cek koneksi internet anda dan muat ulang halaman ini
+  //         atau gunakan Google Chrome.{" "}
+  //         {isLocationError
+  //           ? "Error Location Disabled"
+  //           : isNotificationError
+  //           ? notificationError.message
+  //           : error.message}
+  //       </p>
+  //       <FabButton />
+  //     </div>
+  //   );
+  // }
+
+  if (isLocationError || isAllFoodError) {
     return (
       <div className="w-full h-screen px-6">
         <ExclamationTriangleIcon className="h-20 w-20 mt-16 text-yellow-300 mx-auto" />
@@ -89,11 +115,7 @@ const HomePage = () => {
           notifikasi agar web bisa berjalan. Jika masih muncul pemberitahuan
           galat silakan cek koneksi internet anda dan muat ulang halaman ini
           atau gunakan Google Chrome.{" "}
-          {isLocationError
-            ? "Error Location Disabled"
-            : isNotificationError
-            ? notificationError.message
-            : error.message}
+          {isLocationError ? "Error Location Disabled" : "Error Occured"}
         </p>
         <FabButton />
       </div>
@@ -110,7 +132,7 @@ const HomePage = () => {
         <h1 className="mt-4 font-medium text-lg">
           Makanan Tersedia di Sekitar Anda
         </h1>
-        {isAllFoodLoading || isLocationLoading ? (
+        {isAllFoodLoading || isLocationLoading || isNotificationLoading ? (
           skeletonPlaceholder?.map((_, id) => <SkeletonFoodCard key={id} />)
         ) : allFoodData?.foodData?.length > 0 ? (
           allFoodData?.foodData?.map((food) => (
