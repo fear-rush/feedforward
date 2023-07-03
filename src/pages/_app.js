@@ -30,15 +30,15 @@ const roboto = Roboto({
 
 const noAuthRoutePages = ["/signin", "/signup", "/"];
 
-const OneHoursInMs = 1000 * 60 * 60 * 1;
+const ThreeMinutesInMs = 1000 * 60 * 3;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       refetchOnmount: false,
       refetchOnReconnect: true,
       retry: false,
-      staleTime: OneHoursInMs,
+      staleTime: ThreeMinutesInMs,
     },
   },
 });

@@ -76,8 +76,8 @@ const ArticleSlider = () => {
               <div className="mx-auto flex flex-col max-w-4xl items-center justify-center rounded-lg">
                 <div className="rounded-lg bg-white w-full">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="relative min-w-full h-[300px]">
-                      <a href={data.url} target="_blank" rel="noopener">
+                    <div className="relative min-w-full h-[300px] ">
+                      <a href={data.url} target="_blank" rel="noopener"className="article-slider">
                         <Image
                           className="cursor-pointer rounded-xl"
                           src={data.image}

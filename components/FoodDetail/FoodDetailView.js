@@ -49,11 +49,12 @@ const FoodDetailView = ({
     mutate,
     isLoading: isFoodPickupLoading,
     isError: isFoodPickupError,
+    error,
   } = useMutation({
     mutationFn: () => {
       setIsFoodConfirmationModalOpen(false);
       queryClient.removeQueries();
-      // return axios.post(`${process.env.PROD_URL}/sendPickupNotification`, {
+      // return axios.post(`${process.env.DEV_URL}/sendPickupNotification`, {
       //   foodName: foodName,
       //   takerName: user.displayName,
       //   foodId: foodId,
@@ -61,14 +62,17 @@ const FoodDetailView = ({
       //   dateTaken: Timestamp.now(),
       //   giverId: giverId,
       // });
-      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendPickupNotification`, {
-        foodName: foodName,
-        takerName: user.displayName,
-        foodId: foodId,
-        takerId: user.uid,
-        dateTaken: Timestamp.now(),
-        giverId: giverId,
-      });
+      return axios.post(
+        `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendPickupNotification`,
+        {
+          foodName: foodName,
+          takerName: user.displayName,
+          foodId: foodId,
+          takerId: user.uid,
+          dateTaken: Timestamp.now(),
+          giverId: giverId,
+        }
+      );
     },
     onSuccess: () => {
       router.replace("/profile");
@@ -79,6 +83,7 @@ const FoodDetailView = ({
   });
 
   if (isFoodPickupError) {
+    // console.log(`ini error ${error}`);
     return (
       <div className="mx-auto text-center mt-12">
         <TrashIcon className="w-16 h-16 text-black mx-auto" />
@@ -132,7 +137,7 @@ const FoodDetailView = ({
           />
         </div>
         <div className="px-6 pb-6 lg:pb-14 min-w-full">
-          <h1 className="font-bold text-3xl mt-6 mb-4">{foodName}</h1>
+          <h1 className="font-bold text-3xl mt-6 mb-4 food-name">{foodName}</h1>
           <p className="font-extralight">{foodDescription}</p>
           <div className="flex flex-col justify-evenly items-center my-4 border-2 border-gray-200 rounded-lg">
             <div className="flex flex-1 flex-col justify-center items-center p-2">

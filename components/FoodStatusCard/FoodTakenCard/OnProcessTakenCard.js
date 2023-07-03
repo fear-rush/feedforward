@@ -12,11 +12,14 @@ import { shimmerBlurDataURL } from "../../../lib/shimmerblurdata";
 import { BeatLoader } from "react-spinners";
 
 const Messages = dynamic(import("../../Chat/Messages"), { ssr: false });
-const FoodPickupConfirmation = dynamic(import("../../Modal/OnProcessTakenModal/FoodPickupConfirmation"))
-const FoodCancelConfirmation = dynamic(import("../../Modal/OnProcessTakenModal/FoodCancelConfirmation"))
+const FoodPickupConfirmation = dynamic(
+  import("../../Modal/OnProcessTakenModal/FoodPickupConfirmation")
+);
+const FoodCancelConfirmation = dynamic(
+  import("../../Modal/OnProcessTakenModal/FoodCancelConfirmation")
+);
 
 import "react-toastify/dist/ReactToastify.css";
-
 
 const OnProcessTakenCard = ({
   images,
@@ -51,18 +54,21 @@ const OnProcessTakenCard = ({
   } = useMutation({
     mutationFn: () => {
       setIsFoodPickupConfirmationModalOpen(false);
-      // return axios.post(`${process.env.PROD_URL}/sendTakenNotification`, {
+      // return axios.post(`${process.env.DEV_URL}/sendTakenNotification`, {
       //   foodId: foodId,
       //   foodName: foodName,
       //   giverId: giverId,
       //   takerName: takerName,
       // });
-      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendTakenNotification`, {
-        foodId: foodId,
-        foodName: foodName,
-        giverId: giverId,
-        takerName: takerName,
-      });
+      return axios.post(
+        `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendTakenNotification`,
+        {
+          foodId: foodId,
+          foodName: foodName,
+          giverId: giverId,
+          takerName: takerName,
+        }
+      );
     },
     onSuccess: () => {
       router.reload();
@@ -83,18 +89,21 @@ const OnProcessTakenCard = ({
   } = useMutation({
     mutationFn: () => {
       setIsFoodCancelModalOpen(false);
-      // return axios.post(`${process.env.PROD_URL}/sendCancelNotification`, {
+      // return axios.post(`${process.env.DEV_URL}/sendCancelNotification`, {
       //   takerName: takerName,
       //   foodName: foodName,
       //   foodId: foodId,
       //   giverId: giverId,
       // });
-      return axios.post(`https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendCancelNotification`, {
-        takerName: takerName,
-        foodName: foodName,
-        foodId: foodId,
-        giverId: giverId,
-      });
+      return axios.post(
+        `https://asia-southeast2-feed-forward-187f4.cloudfunctions.net/app/api/sendCancelNotification`,
+        {
+          takerName: takerName,
+          foodName: foodName,
+          foodId: foodId,
+          giverId: giverId,
+        }
+      );
     },
     onSuccess: () => {
       router.reload();
@@ -112,7 +121,7 @@ const OnProcessTakenCard = ({
     position: "fixed",
     left: "50%",
     top: "50%",
-    zIndex: "99"
+    zIndex: "99",
   };
 
   useEffect(() => {
@@ -166,7 +175,7 @@ const OnProcessTakenCard = ({
           </p>
           <div className="min-w-full px-6 py-3">
             <div className="text-ellipsis text-lg font-semibold leading-6">
-              <h1>
+              <h1 className="onprocess-foodname-mobile">
                 <EllipsisText text={foodName} length={"100"} />
               </h1>
             </div>
@@ -229,7 +238,7 @@ const OnProcessTakenCard = ({
 
       {/* LG COMPONENT CARD */}
       <div className="hidden lg:block rounded-lg shadow-cardshadow mt-4">
-        <div className="flex space-x-4 min-w-full h-[300px] cursor-pointer rounded-lg bg-white border-[1px] border-gray-200">
+        <div className="flex justify-between items-center space-x-4 min-w-full h-[300px] cursor-pointer rounded-lg bg-white border-[1px] border-gray-200">
           <div className="relative flex-none w-[300px] h-full">
             <Image
               src={images}
@@ -247,72 +256,70 @@ const OnProcessTakenCard = ({
               priority={true}
             />
           </div>
-          <div className="flex items-center justify-evenly">
-            <div className="flex-1">
-              <p className="inline-block mb-3 font-extralight text-sm p-2 rounded-lg bg-yellow-200">
-                Dalam proses pengambilan
+          <div className="flex-1">
+            <p className="inline-block mb-3 font-extralight text-sm p-2 rounded-lg bg-yellow-200">
+              Dalam proses pengambilan
+            </p>
+            <div className="text-ellipsis text-lg font-semibold leading-6">
+              <h1 className="onprocess-foodname-desktop">
+                <EllipsisText text={foodName} length={"100"} />
+              </h1>
+            </div>
+            <div className="mt-3">
+              <p className="font-medium">Pemberi</p>
+              <p className="text-gray-700">
+                <EllipsisText text={giver} length={"100"} />
               </p>
-              <div className="text-ellipsis text-lg font-semibold leading-6">
-                <h1>
-                  <EllipsisText text={foodName} length={"100"} />
-                </h1>
-              </div>
+            </div>
+            <div className="mt-3">
+              <p className="font-medium">Lokasi Pengambilan</p>
+              <p className="text-gray-700">
+                <EllipsisText text={pickupAddress} length={"80"} />
+              </p>
+            </div>
+            {addressDescription ? (
               <div className="mt-3">
-                <p className="font-medium">Pemberi</p>
+                <p className="font-medium">Detil Lokasi</p>
                 <p className="text-gray-700">
-                  <EllipsisText text={giver} length={"100"} />
+                  <EllipsisText text={addressDescription} length={"50"} />
                 </p>
               </div>
-              <div className="mt-3">
-                <p className="font-medium">Lokasi Pengambilan</p>
-                <p className="text-gray-700">
-                  <EllipsisText text={pickupAddress} length={"80"} />
-                </p>
-              </div>
-              {addressDescription ? (
-                <div className="mt-3">
-                  <p className="font-medium">Detil Lokasi</p>
-                  <p className="text-gray-700">
-                    <EllipsisText text={addressDescription} length={"50"} />
-                  </p>
-                </div>
-              ) : null}
-            </div>
-            <div className="w-64 mr-2 ">
-              <button
-                type="button"
-                className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
+            ) : null}
+          </div>
+          <div className="w-64">
+            <button
+              type="button"
+              className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
+            >
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
+                target="_blank"
+                rel="noopener"
               >
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Buka Lokasi di Google Maps
-                </a>
-              </button>
-              <button
-                type="button"
-                className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
-                onClick={() => setIsChatModalOpen(true)}
-              >
-                Hubungi Pemberi
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsFoodPickupConfirmationModalOpen(true)}
-                className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
-              >
-                Konfirmasi Pengambilan
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsFoodCancelModalOpen(true)}
-                className="w-full px-6 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-gray-900 cursor-pointer my-3"
-              >
-                Batalkan Pengambilan
-              </button>
-            </div>
+                Buka Lokasi di Google Maps
+              </a>
+            </button>
+            <button
+              type="button"
+              className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
+              onClick={() => setIsChatModalOpen(true)}
+            >
+              Hubungi Pemberi
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFoodPickupConfirmationModalOpen(true)}
+              className="w-full px-6 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-gray-900 cursor-pointer my-3"
+            >
+              Konfirmasi Pengambilan
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFoodCancelModalOpen(true)}
+              className="w-full px-6 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-gray-900 cursor-pointer my-3"
+            >
+              Batalkan Pengambilan
+            </button>
           </div>
         </div>
       </div>
@@ -334,7 +341,7 @@ const OnProcessTakenCard = ({
         foodCancelMutate={foodCancelMutate}
       />
 
-       {/* Message Modal */}
+      {/* Message Modal */}
       <Messages
         isChatModalOpen={isChatModalOpen}
         setIsChatModalOpen={setIsChatModalOpen}

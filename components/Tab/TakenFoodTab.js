@@ -14,6 +14,8 @@ import SuccessTakenCard from "../FoodStatusCard/FoodTakenCard/SuccessTakenCard";
 import SkeletonStatusFoodCard from "../Card/SkeletonStatusFoodCard";
 
 const TakenFoodTab = ({ user }) => {
+  // console.log('takenfood')
+
   const skeletonPlaceholder = Array(2).fill(0);
 
   const {

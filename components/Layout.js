@@ -64,7 +64,7 @@ function Layout({ children }) {
                     {user.displayName}
                   </p>
                 </div>
-                <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700">
+                <Menu.Button className="dropdown-menu inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700">
                   <Bars3Icon className="text-black h-7 w-7" />
                 </Menu.Button>
               </div>
@@ -111,7 +111,7 @@ function Layout({ children }) {
                           onClick={() => {
                             queryClient.removeQueries();
                             logOut();
-                            router.replace("/signin");
+                            router.replace("/");
                           }}
                         >
                           Keluar
@@ -127,7 +127,7 @@ function Layout({ children }) {
             <div>
               <Menu as="div" className="inline-block text-left lg:hidden">
                 <div>
-                  <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
+                  <Menu.Button className="dropdown-menu inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
                     <Bars3Icon className="text-black h-7 w-7" />
                   </Menu.Button>
                 </div>
@@ -145,7 +145,7 @@ function Layout({ children }) {
                       <div>
                         <button
                           onClick={() => router.replace("/signin")}
-                          className="secondary-button w-24 px-4 py-3 mb-3"
+                          className="secondary-button mobile-signin-button w-24 px-4 py-3 mb-3"
                         >
                           Masuk
                         </button>
@@ -154,7 +154,7 @@ function Layout({ children }) {
                     <Menu.Item>
                       <button
                         onClick={() => router.replace("/signup")}
-                        className="primary-button w-24 px-4 py-3"
+                        className="primary-button mobile-signup-button w-24 px-4 py-3"
                       >
                         Daftar
                       </button>

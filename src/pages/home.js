@@ -128,18 +128,20 @@ const HomePage = () => {
       <div className="mx-6 md:mx-10 ">
         <HomeLeaderboard />
       </div>
+      <h1 className="mt-4 font-medium text-lg text-center my-4">
+        Makanan Tersedia di Sekitar Anda
+      </h1>
       <div className="grid justify-items-center grid-cols-1 gap-x-4 gap-y-12 md:gap-y-6">
-        <h1 className="mt-4 font-medium text-lg">
-          Makanan Tersedia di Sekitar Anda
-        </h1>
         {isAllFoodLoading || isLocationLoading || isNotificationLoading ? (
           skeletonPlaceholder?.map((_, id) => <SkeletonFoodCard key={id} />)
         ) : allFoodData?.foodData?.length > 0 ? (
-          allFoodData?.foodData?.map((food) => (
-            <Link key={food.id} href={`/food/${food.id}`}>
-              <FoodCard key={food.id} {...food} />
-            </Link>
-          ))
+          <div className="flex flex-col gap-y-12 md:gap-y-6 available-food">
+            {allFoodData?.foodData?.map((food) => (
+              <Link key={food.id} href={`/food/${food.id}`}>
+                <FoodCard key={food.id} {...food} />
+              </Link>
+            ))}
+          </div>
         ) : (
           <div className="text-center px-8">
             <TrashIcon className="w-14 h-14 text-black mx-auto" />

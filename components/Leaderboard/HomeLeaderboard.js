@@ -78,7 +78,7 @@ const HomeLeaderboard = () => {
             </div>
             <div className="flex flex-col items-center">
               <p className="text-center text-xs mb-1 font-medium">Poin</p>
-              <p className="border-2 border-blue-500 rounded-full w-14 h-14 py-3 text-center ">
+              <p className="border-2 border-blue-500 rounded-full w-14 h-14 py-3 text-center user-point">
                 {userStat?.pointStat?.point}
               </p>
             </div>
